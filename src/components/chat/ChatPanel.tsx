@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useDashboard } from "@/contexts/DashboardContext";
 import { streamChat, type ChatMessage } from "@/lib/chatClient";
+import { getKpiSnapshot } from "@/lib/kpiSnapshot";
 import { cn } from "@/lib/utils";
 
 const ChatPanel = () => {
@@ -42,24 +43,49 @@ const ChatPanel = () => {
 
     const ctrl = new AbortController();
     abortRef.current = ctrl;
+    // Tool annotations accumulate above the streamed answer.
+    let toolBlock = "";
+    let answer = "";
+
+    const render = () => {
+      const combined = [toolBlock, answer].filter(Boolean).join("\n\n");
+      setMessages((m) => {
+        const next = [...m];
+        const last = next[next.length - 1];
+        if (last && last.role === "assistant") {
+          next[next.length - 1] = { ...last, content: combined };
+        }
+        return next;
+      });
+    };
 
     try {
       for await (const event of streamChat(
         {
           messages: baseHistory,
           context: { activeTab, selectedStudent: selectedStudent ?? undefined },
+          kpiSnapshot: getKpiSnapshot(),
         },
         ctrl.signal,
       )) {
         if (event.type === "chunk") {
-          setMessages((m) => {
-            const next = [...m];
-            const last = next[next.length - 1];
-            if (last && last.role === "assistant") {
-              next[next.length - 1] = { ...last, content: last.content + event.content };
-            }
-            return next;
-          });
+          answer += event.content;
+          render();
+        } else if (event.type === "tool_call") {
+          const line = `_🔧 calling \`${event.name}\`…_`;
+          toolBlock = toolBlock ? `${toolBlock}\n${line}` : line;
+          render();
+        } else if (event.type === "tool_result") {
+          const line = `_🔧 \`${event.name}\` → ${event.count ?? "ok"}_`;
+          // Replace the most recent "calling" line with the resolved one.
+          const lines = toolBlock.split("\n");
+          if (lines.length && lines[lines.length - 1].includes("calling")) {
+            lines[lines.length - 1] = line;
+            toolBlock = lines.join("\n");
+          } else {
+            toolBlock = toolBlock ? `${toolBlock}\n${line}` : line;
+          }
+          render();
         } else if (event.type === "error") {
           setMessages((m) => {
             const next = [...m];
