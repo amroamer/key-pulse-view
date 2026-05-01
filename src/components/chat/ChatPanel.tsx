@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Send } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useDashboard } from "@/contexts/DashboardContext";
@@ -104,17 +106,37 @@ const ChatPanel = () => {
           >
             <div
               className={cn(
-                "max-w-[85%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap break-words",
+                "max-w-[85%] rounded-lg px-3 py-2 text-sm break-words",
                 m.role === "user"
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground whitespace-pre-wrap"
                   : "bg-muted text-foreground",
               )}
             >
-              {m.content || (
-                streaming && i === messages.length - 1 ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : null
-              )}
+              {m.role === "user" ? (
+                m.content
+              ) : m.content ? (
+                <div
+                  className={cn(
+                    "prose prose-sm max-w-none dark:prose-invert",
+                    "prose-p:my-2 prose-p:leading-relaxed",
+                    "prose-headings:mt-3 prose-headings:mb-2 prose-headings:font-semibold",
+                    "prose-h1:text-base prose-h2:text-base prose-h3:text-sm prose-h4:text-sm",
+                    "prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-li:marker:text-muted-foreground",
+                    "prose-pre:my-2 prose-pre:bg-background prose-pre:border prose-pre:text-xs",
+                    "prose-code:before:content-none prose-code:after:content-none",
+                    "prose-code:bg-background prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:font-normal",
+                    "prose-a:text-primary",
+                    "prose-table:my-2 prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1",
+                    "prose-hr:my-3",
+                  )}
+                >
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {m.content}
+                  </ReactMarkdown>
+                </div>
+              ) : streaming && i === messages.length - 1 ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : null}
             </div>
           </div>
         ))}
