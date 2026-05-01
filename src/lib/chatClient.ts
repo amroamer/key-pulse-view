@@ -1,5 +1,4 @@
 import type { DashboardTab } from "@/components/dashboard/DashboardTabs";
-import type { KpiSnapshotItem } from "@/lib/kpiSnapshot";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -14,7 +13,6 @@ export interface ScreenContext {
 export interface ChatRequest {
   messages: ChatMessage[];
   context?: ScreenContext;
-  kpiSnapshot?: KpiSnapshotItem[];
 }
 
 export type ChatEvent =

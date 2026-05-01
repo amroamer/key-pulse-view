@@ -1,3 +1,5 @@
+import raw from "./qualityData.json";
+
 export interface SchoolRating {
   rating: string;
   count: number;
@@ -32,46 +34,14 @@ export interface ImprovementTrajectory {
   trajectory: "improving" | "declining" | "stable";
 }
 
-export const schoolRatings: SchoolRating[] = [
-  { rating: "Outstanding", count: 18, percent: 10, color: "hsl(155, 75%, 35%)", prevPercent: 8 },
-  { rating: "Very Good", count: 38, percent: 21, color: "hsl(155, 60%, 50%)", prevPercent: 19 },
-  { rating: "Good", count: 45, percent: 25, color: "hsl(155, 45%, 60%)", prevPercent: 24 },
-  { rating: "Acceptable", count: 52, percent: 29, color: "hsl(36, 100%, 50%)", prevPercent: 31 },
-  { rating: "Weak", count: 22, percent: 12, color: "hsl(15, 80%, 50%)", prevPercent: 14 },
-  { rating: "Very Weak", count: 5, percent: 3, color: "hsl(0, 65%, 51%)", prevPercent: 4 },
-];
-
-export const recentInspections: InspectionOutcome[] = [
-  { school: "Dubai International Academy", type: "Private", rating: "Outstanding", prevRating: "Very Good", date: "Mar 2026", status: "green", keyFindings: ["Exceptional STEM program", "Strong inclusion practices"] },
-  { school: "Al Khaleej National School", type: "Private", rating: "Good", prevRating: "Good", date: "Mar 2026", status: "green", keyFindings: ["Stable performance", "Arabic language needs improvement"] },
-  { school: "Rashid Al-Saleh School", type: "Public", rating: "Acceptable", prevRating: "Good", date: "Feb 2026", status: "amber", keyFindings: ["Declining math scores", "Teacher turnover impacting quality"] },
-  { school: "Dubai Modern School", type: "Private", rating: "Weak", prevRating: "Acceptable", date: "Feb 2026", status: "red", keyFindings: ["Significant learning gaps", "Leadership instability"] },
-  { school: "Al Mawakeb School", type: "Private", rating: "Very Good", prevRating: "Good", date: "Jan 2026", status: "green", keyFindings: ["Strong improvement trajectory", "Innovative teaching methods"] },
-  { school: "Emirates National School", type: "Private", rating: "Acceptable", prevRating: "Acceptable", date: "Jan 2026", status: "amber", keyFindings: ["Stagnant performance", "Needs differentiated instruction"] },
-];
-
-export const complianceAreas: ComplianceArea[] = [
-  { area: "Curriculum Standards", score: 88, target: 95, status: "amber", trend: "up", issues: 12 },
-  { area: "Health & Safety", score: 94, target: 98, status: "green", trend: "flat", issues: 4 },
-  { area: "Teacher Licensing", score: 82, target: 95, status: "amber", trend: "up", issues: 28 },
-  { area: "Assessment Practices", score: 71, target: 90, status: "red", trend: "up", issues: 35 },
-  { area: "Inclusion & SEN", score: 65, target: 85, status: "red", trend: "up", issues: 42 },
-  { area: "Governance", score: 91, target: 95, status: "green", trend: "flat", issues: 6 },
-  { area: "Financial Compliance", score: 89, target: 95, status: "amber", trend: "up", issues: 8 },
-  { area: "Data & Reporting", score: 76, target: 90, status: "amber", trend: "up", issues: 22 },
-];
-
-export const improvementTrajectories: ImprovementTrajectory[] = [
-  { school: "Dubai International Academy", ratings: [{ year: "2023", score: 72 }, { year: "2024", score: 78 }, { year: "2025", score: 85 }, { year: "2026", score: 92 }], currentStatus: "green", trajectory: "improving" },
-  { school: "Al Mawakeb School", ratings: [{ year: "2023", score: 58 }, { year: "2024", score: 64 }, { year: "2025", score: 70 }, { year: "2026", score: 76 }], currentStatus: "green", trajectory: "improving" },
-  { school: "Rashid Al-Saleh School", ratings: [{ year: "2023", score: 74 }, { year: "2024", score: 72 }, { year: "2025", score: 68 }, { year: "2026", score: 64 }], currentStatus: "amber", trajectory: "declining" },
-  { school: "Dubai Modern School", ratings: [{ year: "2023", score: 62 }, { year: "2024", score: 58 }, { year: "2025", score: 52 }, { year: "2026", score: 45 }], currentStatus: "red", trajectory: "declining" },
-  { school: "Emirates National School", ratings: [{ year: "2023", score: 66 }, { year: "2024", score: 66 }, { year: "2025", score: 67 }, { year: "2026", score: 66 }], currentStatus: "amber", trajectory: "stable" },
-];
-
-export const qualityHeroMetrics = [
-  { label: "Schools Inspected", value: "180", target: "180", percent: 100, status: "green" as const },
-  { label: "Good or Better", value: "56%", target: "75%", percent: 74, status: "red" as const },
-  { label: "Compliance Score", value: "83%", target: "95%", percent: 87, status: "amber" as const },
-  { label: "Improving Schools", value: "42%", target: "60%", percent: 70, status: "amber" as const },
-];
+export const schoolRatings = raw.schoolRatings as SchoolRating[];
+export const recentInspections = raw.recentInspections as InspectionOutcome[];
+export const complianceAreas = raw.complianceAreas as ComplianceArea[];
+export const improvementTrajectories = raw.improvementTrajectories as ImprovementTrajectory[];
+export const qualityHeroMetrics = raw.qualityHeroMetrics as {
+  label: string;
+  value: string;
+  target: string;
+  percent: number;
+  status: "green" | "amber" | "red";
+}[];

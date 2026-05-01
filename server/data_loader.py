@@ -1,0 +1,253 @@
+"""Read and shape dashboard data for the assistant tools.
+
+The frontend keeps its mock data in JSON files under src/data, mounted into
+this container as /data. We read them on demand (with a tiny cache) so the
+assistant can answer questions about every tab without the frontend having
+to round-trip data on every chat request.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+from functools import lru_cache
+from pathlib import Path
+from typing import Any
+
+DATA_DIR = Path(os.getenv("DATA_DIR", "/data"))
+
+
+def _read_json(name: str) -> Any:
+    path = DATA_DIR / name
+    with path.open("r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+@lru_cache(maxsize=1)
+def _executive_kpis() -> list[dict]:
+    """Top-level KPI scoreboard, with the React-only iconKey stripped out."""
+    raw = _read_json("kpiData.json")
+    return [{k: v for k, v in item.items() if k != "iconKey"} for item in raw]
+
+
+@lru_cache(maxsize=1)
+def _datasets() -> dict[str, Any]:
+    """Build the registry of datasets exposed to tools.
+
+    Keys are the names the model addresses (`overview_kpis`,
+    `equity_dimensions`, ...). Values are the raw JSON-decoded data.
+    """
+    efficiency = _read_json("efficiencyData.json")
+    equity = _read_json("equityData.json")
+    quality = _read_json("qualityData.json")
+    teacher = _read_json("teacherData.json")
+    journey = _read_json("studentJourneyData.json")
+    profile = _read_json("studentProfileData.json")
+
+    return {
+        # Executive / Overview
+        "overview_kpis": _executive_kpis(),
+
+        # Efficiency tab
+        "efficiency_budget": efficiency["budgetCategories"],
+        "efficiency_resources": efficiency["resourceMetrics"],
+        "efficiency_cost_benchmarks": efficiency["costEfficiencyData"],
+        "efficiency_operational_kpis": efficiency["operationalKPIs"],
+        "efficiency_hero_metrics": efficiency["efficiencyHeroMetrics"],
+
+        # Equity tab
+        "equity_demographics": equity["demographicGroups"],
+        "equity_gender": equity["genderData"],
+        "equity_dimensions": equity["equityDimensions"],
+        "equity_districts": equity["geoDistricts"],
+        "equity_inclusion": equity["inclusionMetrics"],
+
+        # Quality tab
+        "quality_school_ratings": quality["schoolRatings"],
+        "quality_inspections": quality["recentInspections"],
+        "quality_compliance": quality["complianceAreas"],
+        "quality_trajectories": quality["improvementTrajectories"],
+        "quality_hero_metrics": quality["qualityHeroMetrics"],
+
+        # Teacher tab
+        "teacher_quality_bands": teacher["qualityBands"],
+        "teacher_retention_cohorts": teacher["retentionCohorts"],
+        "teacher_pd_programs": teacher["pdPrograms"],
+        "teacher_hero_metrics": teacher["teacherHeroMetrics"],
+        "teacher_by_subject": teacher["teacherBySubject"],
+
+        # Student Journey tab
+        "journey_stages": journey["journeyStages"],
+        "journey_transitions": journey["transitions"],
+        "journey_cohort_trends": journey["cohortTrends"],
+        "journey_risk_matrix": journey["riskMatrix"],
+
+        # Student Profile tab
+        "students": profile["sampleStudents"],
+        "student_milestones": profile["milestones"],
+        "student_academic_records": profile["academicRecords"],
+        "student_risk_dimensions": profile["riskDimensions"],
+        "student_interventions": profile["interventions"],
+    }
+
+
+PILLAR_TO_DATASETS: dict[str, list[str]] = {
+    "executive": ["overview_kpis"],
+    "landing": ["overview_kpis"],
+    "overview": ["overview_kpis"],
+    "efficiency": [
+        "efficiency_hero_metrics",
+        "efficiency_budget",
+        "efficiency_resources",
+        "efficiency_cost_benchmarks",
+        "efficiency_operational_kpis",
+    ],
+    "equity": [
+        "equity_dimensions",
+        "equity_demographics",
+        "equity_gender",
+        "equity_districts",
+        "equity_inclusion",
+    ],
+    "quality": [
+        "quality_hero_metrics",
+        "quality_school_ratings",
+        "quality_inspections",
+        "quality_compliance",
+        "quality_trajectories",
+    ],
+    "teacher": [
+        "teacher_hero_metrics",
+        "teacher_quality_bands",
+        "teacher_retention_cohorts",
+        "teacher_pd_programs",
+        "teacher_by_subject",
+    ],
+    "student": [
+        "journey_stages",
+        "journey_transitions",
+        "journey_cohort_trends",
+        "journey_risk_matrix",
+    ],
+    "profile": [
+        "students",
+    ],
+}
+
+
+def list_datasets() -> list[str]:
+    return sorted(_datasets().keys())
+
+
+def get_dataset(name: str) -> Any:
+    data = _datasets()
+    if name not in data:
+        return {"error": f"unknown dataset '{name}'", "available": sorted(data.keys())}
+    return data[name]
+
+
+def get_pillar(name: str) -> dict[str, Any]:
+    """Return all datasets that make up a tab/pillar, keyed by dataset name."""
+    pillar_key = name.lower()
+    dataset_names = PILLAR_TO_DATASETS.get(pillar_key)
+    if not dataset_names:
+        return {
+            "error": f"unknown pillar '{name}'",
+            "available": sorted(PILLAR_TO_DATASETS.keys()),
+        }
+    data = _datasets()
+    return {ds: data[ds] for ds in dataset_names if ds in data}
+
+
+def get_kpi(kpi_id: str) -> Any:
+    for k in _executive_kpis():
+        if k.get("id") == kpi_id:
+            return k
+    return {"error": f"unknown kpi '{kpi_id}'"}
+
+
+def filter_by_status(name: str, status: str) -> Any:
+    """Filter any dataset that has a string `status` field."""
+    data = get_dataset(name)
+    if isinstance(data, dict) and "error" in data:
+        return data
+    if not isinstance(data, list):
+        return {"error": f"dataset '{name}' is not a list and cannot be filtered by status"}
+    rows = [r for r in data if isinstance(r, dict) and r.get("status") == status]
+    return rows
+
+
+def status_summary(name: str | None = None) -> Any:
+    """Summarise red/amber/green counts for a dataset (or every dataset)."""
+    data = _datasets()
+    if name:
+        if name not in data:
+            return {"error": f"unknown dataset '{name}'"}
+        return _summarise(name, data[name])
+    out: dict[str, dict] = {}
+    for ds_name, ds in data.items():
+        summary = _summarise(ds_name, ds)
+        if summary:
+            out[ds_name] = summary
+    return out
+
+
+def _summarise(name: str, ds: Any) -> dict | None:
+    if not isinstance(ds, list):
+        return None
+    counts = {"red": 0, "amber": 0, "green": 0}
+    total_with_status = 0
+    for row in ds:
+        if not isinstance(row, dict):
+            continue
+        status = row.get("status") or row.get("currentStatus") or row.get("overallStatus")
+        if status in counts:
+            counts[status] += 1
+            total_with_status += 1
+    if total_with_status == 0:
+        return None
+    return {"total": total_with_status, **counts}
+
+
+def search(query: str, limit: int = 12) -> list[dict]:
+    """Naive string-contains search across every dataset row."""
+    needle = query.lower().strip()
+    if not needle:
+        return []
+    hits: list[dict] = []
+    for name, ds in _datasets().items():
+        if isinstance(ds, list):
+            for row in ds:
+                if not isinstance(row, dict):
+                    continue
+                blob = json.dumps(row, ensure_ascii=False).lower()
+                if needle in blob:
+                    hits.append({"dataset": name, "row": row})
+                    if len(hits) >= limit:
+                        return hits
+        elif isinstance(ds, dict):
+            for sub_key, sub_val in ds.items():
+                blob = json.dumps({sub_key: sub_val}, ensure_ascii=False).lower()
+                if needle in blob:
+                    hits.append({"dataset": name, "key": sub_key, "row": sub_val})
+                    if len(hits) >= limit:
+                        return hits
+    return hits
+
+
+def get_student_profile(student_id: str) -> dict:
+    """Aggregate everything we know about one student."""
+    data = _datasets()
+    students_by_id = {s["id"]: s for s in data["students"]}
+    if student_id not in students_by_id:
+        return {
+            "error": f"unknown student '{student_id}'",
+            "available_ids": list(students_by_id.keys()),
+        }
+    return {
+        "profile": students_by_id[student_id],
+        "milestones": data["student_milestones"].get(student_id, []),
+        "academic_records": data["student_academic_records"].get(student_id, []),
+        "risk_dimensions": data["student_risk_dimensions"].get(student_id, []),
+        "interventions": data["student_interventions"].get(student_id, []),
+    }

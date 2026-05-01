@@ -1,0 +1,42 @@
+{
+  "qualityBands": [
+    { "band": "Outstanding", "count": 820, "percent": 12, "color": "hsl(155, 75%, 42%)", "status": "green" },
+    { "band": "Good", "count": 1640, "percent": 24, "color": "hsl(155, 55%, 55%)", "status": "green" },
+    { "band": "Satisfactory", "count": 2460, "percent": 36, "color": "hsl(36, 100%, 50%)", "status": "amber" },
+    { "band": "Developing", "count": 1370, "percent": 20, "color": "hsl(25, 90%, 55%)", "status": "amber" },
+    { "band": "Unsatisfactory", "count": 548, "percent": 8, "color": "hsl(0, 65%, 51%)", "status": "red" }
+  ],
+  "retentionCohorts": [
+    { "year": "2020", "hired": 1200, "year1": 1080, "year2": 960, "year3": 840, "year5": 660 },
+    { "year": "2021", "hired": 1350, "year1": 1215, "year2": 1080, "year3": 918, "year5": 0 },
+    { "year": "2022", "hired": 1100, "year1": 990, "year2": 880, "year3": 0, "year5": 0 },
+    { "year": "2023", "hired": 1450, "year1": 1305, "year2": 0, "year3": 0, "year5": 0 },
+    { "year": "2024", "hired": 1280, "year1": 0, "year2": 0, "year3": 0, "year5": 0 }
+  ],
+  "pdPrograms": [
+    { "name": "AI-Enhanced Pedagogy", "enrolled": 420, "completed": 285, "satisfaction": 88, "impactScore": 82, "status": "green" },
+    { "name": "Differentiated Instruction", "enrolled": 680, "completed": 510, "satisfaction": 76, "impactScore": 71, "status": "amber" },
+    { "name": "Assessment Literacy", "enrolled": 520, "completed": 390, "satisfaction": 72, "impactScore": 68, "status": "amber" },
+    { "name": "Arabic Language Teaching", "enrolled": 340, "completed": 180, "satisfaction": 64, "impactScore": 55, "status": "red" },
+    { "name": "STEM Integration", "enrolled": 450, "completed": 315, "satisfaction": 82, "impactScore": 78, "status": "green" },
+    { "name": "Inclusive Education", "enrolled": 380, "completed": 228, "satisfaction": 70, "impactScore": 62, "status": "amber" },
+    { "name": "Digital Tools Mastery", "enrolled": 560, "completed": 392, "satisfaction": 85, "impactScore": 80, "status": "green" },
+    { "name": "Leadership Pipeline", "enrolled": 180, "completed": 120, "satisfaction": 91, "impactScore": 86, "status": "green" }
+  ],
+  "teacherHeroMetrics": [
+    { "label": "Total Teaching Staff", "value": "6,838", "target": "7,200", "trend": "up", "status": "amber", "detail": "362 vacancies" },
+    { "label": "Quality Index", "value": "62", "target": "75", "trend": "up", "status": "red", "detail": "+3 pts YoY" },
+    { "label": "Retention Rate", "value": "85%", "target": "92%", "trend": "down", "status": "amber", "detail": "-1% YoY" },
+    { "label": "PD Completion", "value": "68%", "target": "90%", "trend": "up", "status": "amber", "detail": "+8% YoY" }
+  ],
+  "teacherBySubject": [
+    { "subject": "Mathematics", "count": 1020, "quality": 68, "vacancy": 8 },
+    { "subject": "Science", "count": 890, "quality": 72, "vacancy": 5 },
+    { "subject": "English", "count": 1150, "quality": 74, "vacancy": 3 },
+    { "subject": "Arabic", "count": 780, "quality": 58, "vacancy": 15 },
+    { "subject": "Social Studies", "count": 520, "quality": 65, "vacancy": 6 },
+    { "subject": "ICT / CS", "count": 340, "quality": 70, "vacancy": 18 },
+    { "subject": "Arts / PE", "count": 620, "quality": 62, "vacancy": 4 },
+    { "subject": "Islamic Studies", "count": 480, "quality": 60, "vacancy": 10 }
+  ]
+}

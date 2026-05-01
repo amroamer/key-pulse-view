@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useDashboard } from "@/contexts/DashboardContext";
 import { streamChat, type ChatMessage } from "@/lib/chatClient";
-import { getKpiSnapshot } from "@/lib/kpiSnapshot";
 import { cn } from "@/lib/utils";
 
 const ChatPanel = () => {
@@ -64,7 +63,6 @@ const ChatPanel = () => {
         {
           messages: baseHistory,
           context: { activeTab, selectedStudent: selectedStudent ?? undefined },
-          kpiSnapshot: getKpiSnapshot(),
         },
         ctrl.signal,
       )) {

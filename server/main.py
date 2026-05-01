@@ -53,7 +53,21 @@ class ScreenContext(BaseModel):
 class ChatRequest(BaseModel):
     messages: list[Message]
     context: Optional[ScreenContext] = None
-    kpiSnapshot: Optional[list[dict]] = None
+
+
+# Map dashboard tab names (used in the frontend) to pillar keys the tools
+# understand. Keep both sides aligned.
+TAB_TO_PILLAR = {
+    "landing": "executive",
+    "overview": "executive",
+    "executive": "executive",
+    "student": "student",
+    "profile": "profile",
+    "equity": "equity",
+    "teacher": "teacher",
+    "quality": "quality",
+    "efficiency": "efficiency",
+}
 
 
 SYSTEM_PROMPT = (
@@ -61,10 +75,21 @@ SYSTEM_PROMPT = (
     "education-sector KPI portal. The dashboard has eight tabs covering: "
     "overview, executive summary, student journey, student profile, access & "
     "equity, teacher excellence, quality assurance, and institutional efficiency.\n\n"
-    "You have tools to read the live KPI data the user is looking at. **Always "
-    "use the tools** before answering questions about KPI values, trends, "
-    "targets, gaps, or status. Do not invent KPI names or numbers — call a "
-    "tool, then base your answer strictly on what comes back.\n\n"
+    "You have tools that read the dashboard's live data from disk. "
+    "**Always use the tools** before answering questions about values, trends, "
+    "targets, gaps, status, or anything specific to the data on screen. Do not "
+    "invent metric names or numbers — call a tool, then base your answer "
+    "strictly on what comes back.\n\n"
+    "Tool-selection guide:\n"
+    "- `get_pillar_data(pillar)` — best default when the user asks 'what's on "
+    "this tab?' or for an overview of one area.\n"
+    "- `get_dataset(name)` — when you need a single table; call `list_datasets` "
+    "first if unsure of names.\n"
+    "- `filter_by_status(dataset, status)` — for 'which X are red/amber/green?'\n"
+    "- `status_summary()` — for 'how are we doing overall?'\n"
+    "- `get_kpi(id)` — single KPI lookup on the executive scoreboard.\n"
+    "- `search_data(query)` — when the topic could be in any pillar.\n"
+    "- `get_student_profile(id)` — full bundle for one student.\n\n"
     "Formatting rules:\n"
     "- Render rich markdown: **bold**, bullet lists, tables, inline `code`.\n"
     "- Keep replies compact. Prefer short paragraphs, tight bullets, or a "
@@ -72,21 +97,24 @@ SYSTEM_PROMPT = (
     "- Avoid h1/h2 headings. Use **bold labels** for sections instead.\n"
     "- No filler ('Certainly!', 'Here is...'). Lead with the answer.\n\n"
     "Content rules:\n"
-    "- When citing a KPI, use its real name and value as returned by the tool.\n"
+    "- When citing a metric, use the real name and value the tool returned.\n"
     "- If a tool returns nothing, say so plainly rather than improvising."
 )
 
 
-def build_system_prompt(ctx: Optional[ScreenContext], snapshot_size: int) -> str:
+def build_system_prompt(ctx: Optional[ScreenContext]) -> str:
     extras: list[str] = []
     if ctx is not None:
-        extras.append(f"Current tab: {ctx.activeTab}.")
-        if ctx.selectedStudent:
-            extras.append(f"Selected student: {ctx.selectedStudent}.")
-    if snapshot_size:
+        pillar = TAB_TO_PILLAR.get(ctx.activeTab, ctx.activeTab)
         extras.append(
-            f"There are {snapshot_size} KPIs visible in the current data snapshot."
+            f"Current tab: {ctx.activeTab}. When the user asks about 'this tab' or "
+            f"'what's on screen', call `get_pillar_data(pillar='{pillar}')` first."
         )
+        if ctx.selectedStudent:
+            extras.append(
+                f"Selected student id: {ctx.selectedStudent}. For student-specific "
+                f"questions use `get_student_profile(student_id='{ctx.selectedStudent}')`."
+            )
     if not extras:
         return SYSTEM_PROMPT
     return SYSTEM_PROMPT + "\n\n" + " ".join(extras)
@@ -113,10 +141,9 @@ def _result_count(result: Any) -> Optional[int]:
 @app.post("/api/chat")
 async def chat(req: ChatRequest) -> StreamingResponse:
     client = AsyncClient(host=OLLAMA_HOST)
-    snapshot = req.kpiSnapshot or []
 
     msgs: list[dict] = [
-        {"role": "system", "content": build_system_prompt(req.context, len(snapshot))}
+        {"role": "system", "content": build_system_prompt(req.context)}
     ]
     msgs.extend(m.model_dump() for m in req.messages)
 
@@ -175,7 +202,7 @@ async def chat(req: ChatRequest) -> StreamingResponse:
                         args = dict(raw_args or {})
 
                     yield _sse({"type": "tool_call", "name": name, "args": args})
-                    result = run_tool(name, args, snapshot)
+                    result = run_tool(name, args)
                     yield _sse(
                         {
                             "type": "tool_result",
