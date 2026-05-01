@@ -1,4 +1,5 @@
 import { Download, Calendar, Filter } from "lucide-react";
+import khdaLogo from "@/assets/khda-logo.png";
 
 interface DashboardHeaderProps {
   period: string;
@@ -11,15 +12,22 @@ const DashboardHeader = ({ period, onPeriodChange }: DashboardHeaderProps) => {
   return (
     <header className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground" style={{ lineHeight: 1.15 }}>
-            Dubai Education Authority
-          </h1>
-          <p className="text-base text-primary font-semibold mt-1">E33 Strategic KPIs Dashboard</p>
-          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
-            <Calendar size={12} />
-            Weekly Executive Summary &middot; Last Updated: March 20, 2026
-          </p>
+        <div className="flex items-start gap-4">
+          <img
+            src={khdaLogo}
+            alt="KHDA — Dubai Knowledge"
+            className="h-12 sm:h-14 w-auto shrink-0 mt-1"
+          />
+          <div>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground" style={{ lineHeight: 1.15 }}>
+              Dubai Education Authority
+            </h1>
+            <p className="text-base text-primary font-semibold mt-1">E33 Strategic KPIs Dashboard</p>
+            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+              <Calendar size={12} />
+              Weekly Executive Summary &middot; Last Updated: March 20, 2026
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {/* Period selector */}

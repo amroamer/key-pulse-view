@@ -2,60 +2,98 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Body font — KHDA's bilingual default. */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,700;1,400;1,700&display=swap');
+
+/* Dubai W23 — official UAE government typeface. Self-hosted from src/assets/fonts. */
+@font-face {
+  font-family: 'Dubai W23';
+  src: url('/src/assets/fonts/DubaiW23-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dubai W23';
+  src: url('/src/assets/fonts/DubaiW23-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dubai W23';
+  src: url('/src/assets/fonts/DubaiW23-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dubai W23';
+  src: url('/src/assets/fonts/DubaiW23-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   :root {
-    --background: 160 5% 97%;
-    --foreground: 168 38% 17%;
+    /* KHDA brand palette — see BRAND.md.
+       khda-primary 500 = #51548a (indigo)
+       khda-secondary 500 = #615e6c (charcoal)
+       khda-info 500 = #215b83 (deep blue)
+       khda-action 500 = #8b2555 (wine)
+       khda-error 500 = #c72324 (red)
+       khda-success 500 = #86a33a (olive) */
+    --background: 0 0% 100%;
+    --foreground: 252 7% 34%; /* khda-secondary 600 */
 
     --card: 0 0% 100%;
-    --card-foreground: 168 38% 17%;
+    --card-foreground: 252 7% 34%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 168 38% 17%;
+    --popover-foreground: 252 7% 34%;
 
-    --primary: 155 75% 42%;
+    --primary: 237 26% 43%; /* khda-primary 500 */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 207 90% 54%;
+    --secondary: 253 7% 40%; /* khda-secondary 500 */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 160 10% 94%;
-    --muted-foreground: 168 10% 45%;
+    --muted: 254 4% 96%; /* khda-secondary 25 */
+    --muted-foreground: 252 7% 45%;
 
-    --accent: 160 10% 94%;
-    --accent-foreground: 168 38% 17%;
+    --accent: 332 58% 35%; /* khda-action 500 */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 70% 46%; /* khda-error 500 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 10% 90%;
-    --input: 160 10% 90%;
-    --ring: 155 75% 42%;
+    --border: 252 5% 90%; /* khda-secondary 100ish */
+    --input: 252 5% 90%;
+    --ring: 237 26% 43%;
 
     --radius: 0.75rem;
 
-    /* Dashboard-specific tokens */
-    --status-green-bg: 122 38% 85%;
-    --status-green-text: 122 38% 25%;
-    --status-green-accent: 122 39% 49%;
+    /* Dashboard status tokens — mapped onto KHDA success/warning/error. */
+    --status-green-bg: 77 48% 88%;
+    --status-green-text: 77 48% 25%;
+    --status-green-accent: 77 48% 43%; /* khda-success 500 */
 
-    --status-amber-bg: 36 100% 85%;
+    --status-amber-bg: 36 100% 88%;
     --status-amber-text: 36 60% 30%;
     --status-amber-accent: 36 100% 50%;
 
-    --status-red-bg: 0 73% 90%;
+    --status-red-bg: 0 70% 92%;
     --status-red-text: 0 60% 35%;
-    --status-red-accent: 0 65% 51%;
+    --status-red-accent: 0 70% 46%; /* khda-error 500 */
 
-    --e33-badge-bg: 207 88% 94%;
-    --e33-badge-text: 207 80% 42%;
+    --e33-badge-bg: 237 30% 94%;
+    --e33-badge-text: 237 26% 35%;
 
-    --trend-up: 145 63% 42%;
-    --trend-down: 0 72% 51%;
+    --trend-up: 77 48% 43%;
+    --trend-down: 0 70% 46%;
 
-    --sparkline-stroke: 155 75% 42%;
+    --sparkline-stroke: 237 26% 43%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -74,7 +112,10 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Noto Sans', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Dubai W23', 'Noto Sans', system-ui, sans-serif;
   }
 }
 
