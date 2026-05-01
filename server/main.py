@@ -84,6 +84,7 @@ async def chat(req: ChatRequest) -> StreamingResponse:
                 model=OLLAMA_MODEL,
                 messages=msgs,
                 stream=True,
+                keep_alive=-1,
             ):
                 content = chunk.get("message", {}).get("content", "") if isinstance(chunk, dict) else getattr(chunk.message, "content", "")
                 if content:
