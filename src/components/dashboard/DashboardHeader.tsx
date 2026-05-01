@@ -1,4 +1,5 @@
-import { Download, Calendar, Filter } from "lucide-react";
+import { Download, Calendar, Filter, Settings as SettingsIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import khdaLogo from "@/assets/khda-logo.png";
 import dubaiGovLogo from "@/assets/dubai-gov-logo.png";
 
@@ -60,6 +61,14 @@ const DashboardHeader = ({ period, onPeriodChange }: DashboardHeaderProps) => {
           <button className="flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-semibold hover:opacity-90 transition-opacity active:scale-95">
             <Download size={12} /> Export PDF
           </button>
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            title="Settings"
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors active:scale-95"
+          >
+            <SettingsIcon size={14} />
+          </Link>
         </div>
       </div>
     </header>

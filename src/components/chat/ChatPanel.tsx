@@ -11,6 +11,7 @@ import {
   type ToolInvocation,
 } from "@/lib/chatClient";
 import type { DashboardTab } from "@/components/dashboard/DashboardTabs";
+import { getSelectedModel } from "@/lib/modelSettings";
 import { cn } from "@/lib/utils";
 
 interface ChatPanelProps {
@@ -219,6 +220,7 @@ const ChatPanel = ({
         {
           messages: baseHistory,
           context: { activeTab },
+          model: getSelectedModel() ?? undefined,
         },
         ctrl.signal,
       )) {

@@ -53,6 +53,10 @@ class ScreenContext(BaseModel):
 class ChatRequest(BaseModel):
     messages: list[Message]
     context: Optional[ScreenContext] = None
+    # Optional per-request model override. When omitted, falls back to
+    # OLLAMA_MODEL env var. Set by the Settings page so the user can pick
+    # whichever model is reliably available on their Ollama server.
+    model: Optional[str] = None
 
 
 # Map dashboard tab names (used in the frontend) to pillar keys the tools
@@ -209,6 +213,42 @@ async def health() -> dict:
     return {"ok": True, "model": OLLAMA_MODEL, "host": OLLAMA_HOST}
 
 
+@app.get("/api/models")
+async def list_models() -> dict:
+    """Proxy Ollama's /api/tags so the Settings page can show what's
+    actually installed on the server. Returns `default` (the env-var fallback)
+    so the UI can mark which model is used when no override is set."""
+    try:
+        client = AsyncClient(host=OLLAMA_HOST)
+        result = await client.list()
+        raw = (
+            result.get("models", [])
+            if isinstance(result, dict)
+            else getattr(result, "models", [])
+        )
+        models: list[dict[str, Any]] = []
+        for m in raw:
+            entry = m if isinstance(m, dict) else m.model_dump()
+            name = entry.get("name") or entry.get("model")
+            if not name:
+                continue
+            models.append(
+                {
+                    "name": name,
+                    "size": entry.get("size"),
+                    "modified_at": (
+                        entry.get("modified_at").isoformat()
+                        if hasattr(entry.get("modified_at"), "isoformat")
+                        else entry.get("modified_at")
+                    ),
+                }
+            )
+        models.sort(key=lambda m: m["name"])
+        return {"models": models, "default": OLLAMA_MODEL}
+    except Exception as exc:  # noqa: BLE001
+        return {"error": str(exc), "models": [], "default": OLLAMA_MODEL}
+
+
 def _sse(event: dict) -> str:
     return f"data: {json.dumps(event)}\n\n"
 
@@ -225,6 +265,7 @@ def _result_count(result: Any) -> Optional[int]:
 @app.post("/api/chat")
 async def chat(req: ChatRequest) -> StreamingResponse:
     client = AsyncClient(host=OLLAMA_HOST)
+    selected_model = req.model or OLLAMA_MODEL
 
     msgs: list[dict] = [
         {"role": "system", "content": build_system_prompt(req.context)}
@@ -242,7 +283,7 @@ async def chat(req: ChatRequest) -> StreamingResponse:
                 tool_calls: list = []
 
                 async for chunk in await client.chat(
-                    model=OLLAMA_MODEL,
+                    model=selected_model,
                     messages=msgs,
                     tools=TOOL_SCHEMAS,
                     stream=True,

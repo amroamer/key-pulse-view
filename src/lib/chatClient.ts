@@ -20,6 +20,32 @@ export interface ScreenContext {
 export interface ChatRequest {
   messages: ChatMessage[];
   context?: ScreenContext;
+  /** Override the server's default LLM. Set by the Settings page via
+   * localStorage; omit to use the server's `OLLAMA_MODEL` default. */
+  model?: string;
+}
+
+export interface ModelInfo {
+  name: string;
+  size?: number;
+  modified_at?: string;
+}
+
+export interface ListModelsResponse {
+  models: ModelInfo[];
+  /** The server's fallback model (env-var default). Used to mark which
+   * model is in effect when the user hasn't picked an override. */
+  default: string;
+  /** Populated when the model server (Ollama) is unreachable. */
+  error?: string;
+}
+
+export async function listModels(): Promise<ListModelsResponse> {
+  const res = await fetch("/api/models");
+  if (!res.ok) {
+    throw new Error(`Failed to list models: ${res.status} ${res.statusText}`);
+  }
+  return res.json();
 }
 
 export type ChatEvent =
