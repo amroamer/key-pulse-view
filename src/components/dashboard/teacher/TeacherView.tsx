@@ -3,6 +3,7 @@ import { qualityBands, teacherHeroMetrics, retentionCohorts, pdPrograms, teacher
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 import ScrollReveal from "../ScrollReveal";
+import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusPill = { green: "status-pill status-pill-green", amber: "status-pill status-pill-amber", red: "status-pill status-pill-red" };
@@ -100,12 +101,12 @@ const TeacherView = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="year" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
+                  <Tooltip contentStyle={tooltipContentStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle} />
                   <Legend iconType="circle" iconSize={6} wrapperStyle={{ fontSize: "10px" }} />
                   <Line type="monotone" dataKey="hired" stroke="hsl(var(--info))" strokeWidth={2} dot={{ r: 3 }} name="Hired" connectNulls />
                   <Line type="monotone" dataKey="Year 1" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
                   <Line type="monotone" dataKey="Year 2" stroke="hsl(var(--status-amber-accent))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-                  <Line type="monotone" dataKey="Year 3" stroke="hsl(25, 90%, 55%)" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                  <Line type="monotone" dataKey="Year 3" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
                   <Line type="monotone" dataKey="Year 5" stroke="hsl(var(--status-red-accent))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
                 </LineChart>
               </ResponsiveContainer>

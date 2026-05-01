@@ -1,5 +1,6 @@
 ﻿import { journeyStages } from "@/data/studentJourneyData";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from "recharts";
+import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
 
 const data = journeyStages.map((s) => ({
   name: s.shortLabel,
@@ -24,7 +25,7 @@ const PerformanceDistribution = () => (
         <BarChart data={data} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
           <XAxis dataKey="name" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
           <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[0, 100]} />
-          <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
+          <Tooltip contentStyle={tooltipContentStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle} />
           <ReferenceLine y={80} stroke="hsl(var(--primary))" strokeDasharray="4 4" label={{ value: "Target", position: "insideTopRight", fontSize: 9, fill: "hsl(var(--primary))" }} />
           <Bar dataKey="score" radius={[6, 6, 0, 0]} name="Avg Score" barSize={36}>
             {data.map((d, i) => (

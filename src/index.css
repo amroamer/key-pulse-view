@@ -44,7 +44,7 @@
        khda-action 500 = #8b2555 (wine)
        khda-error 500 = #c72324 (red)
        khda-success 500 = #86a33a (olive) */
-    --background: 0 0% 100%;
+    --background: 254 4% 98%; /* whisper of khda-secondary tint */
     --foreground: 252 7% 34%; /* khda-secondary 600 */
 
     --card: 0 0% 100%;

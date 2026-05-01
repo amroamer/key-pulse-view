@@ -38,12 +38,10 @@ const DashboardTabs = ({ active, onChange }: DashboardTabsProps) => {
             role="tab"
             aria-selected={active === tab.id}
             onClick={() => onChange(tab.id)}
-            className={`flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.97] ${
+            className={`relative flex items-center gap-2 whitespace-nowrap rounded-md px-3.5 py-2 text-sm transition-colors duration-150 active:scale-[0.98] ${
               active === tab.id
-                ? tab.id === "landing"
-                  ? "bg-foreground text-background shadow-sm"
-                  : "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                ? "text-primary font-semibold bg-primary/5"
+                : "text-muted-foreground font-medium hover:text-foreground hover:bg-muted/60"
             }`}
           >
             {tab.icon}

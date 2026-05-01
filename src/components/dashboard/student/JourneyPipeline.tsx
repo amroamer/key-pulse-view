@@ -10,6 +10,7 @@ const HERO_ICONS: Record<string, React.ReactNode> = {
 };
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
+import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
 
 const statusClasses = {
   green: "bg-[hsl(var(--status-green-bg))] border-[hsl(var(--status-green-accent))]",
@@ -213,7 +214,7 @@ const JourneyPipeline = () => {
                 <BarChart data={comparisonData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
                   <XAxis dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
                   <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[0, 100]} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
+                  <Tooltip contentStyle={tooltipContentStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle} />
                   <Bar dataKey="score" radius={[4, 4, 0, 0]} name="Avg Score">
                     {comparisonData.map((d, idx) => (
                       <Cell key={idx} fill={d.name === selectedData.shortLabel ? statusColor[selectedData.status] : "hsl(var(--muted))"} />

@@ -2,6 +2,7 @@ import { budgetCategories, resourceMetrics, costEfficiencyData, operationalKPIs,
 import { TrendingUp, TrendingDown, Minus, DollarSign, AlertCircle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import ScrollReveal from "../ScrollReveal";
+import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusBg = { green: "bg-[hsl(var(--status-green-bg))]", amber: "bg-[hsl(var(--status-amber-bg))]", red: "bg-[hsl(var(--status-red-bg))]" };
@@ -54,7 +55,7 @@ const EfficiencyView = () => {
                 <BarChart data={budgetChartData} layout="vertical" margin={{ top: 5, right: 15, left: 5, bottom: 0 }}>
                   <XAxis type="number" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}M`} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={80} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} formatter={(v: number, n: string, p: any) => [`${v}M AED`, n === "spent" ? "Spent" : "Allocated"]} />
+                  <Tooltip contentStyle={tooltipContentStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle} formatter={(v: number, n: string, p: any) => [`${v}M AED`, n === "spent" ? "Spent" : "Allocated"]} />
                   <Bar dataKey="allocated" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} barSize={10} name="Allocated" />
                   <Bar dataKey="spent" radius={[0, 4, 4, 0]} barSize={10} name="Spent">
                     {budgetChartData.map((d, i) => (<Cell key={i} fill={statusColor[d.status]} />))}

@@ -1,5 +1,6 @@
 ﻿import { getAcademicRecords, type StudentProfile } from "@/data/studentProfileData";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Area, AreaChart } from "recharts";
+import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
 
 interface AcademicTrajectoryProps {
   student: StudentProfile;
@@ -57,7 +58,7 @@ const AcademicTrajectory = ({ student }: AcademicTrajectoryProps) => {
           <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[0, 4]} yAxisId="gpa" />
           <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[0, 100]} yAxisId="pct" orientation="right" hide />
           <Tooltip
-            contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))", background: "hsl(0, 0%, 100%)" }}
+            contentStyle={tooltipContentStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle}
           />
           <ReferenceLine yAxisId="gpa" y={3.0} stroke="hsl(var(--primary))" strokeDasharray="4 4" strokeOpacity={0.4} />
           <Area type="monotone" dataKey="GPA" stroke="hsl(var(--primary))" strokeWidth={2.5} fill="url(#gpaGradient)" yAxisId="gpa" dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />

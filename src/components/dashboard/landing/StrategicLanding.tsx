@@ -72,15 +72,22 @@ const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
             {/* Quick stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { icon: <Users size={14} />, label: "Total Students", value: systemHealth.totalStudents, sub: "+3.2% YoY" },
-                { icon: <Award size={14} />, label: "Total Teachers", value: systemHealth.totalTeachers, sub: "1:15 ratio" },
-                { icon: <Building2 size={14} />, label: "Schools", value: systemHealth.totalSchools, sub: "98% inspected" },
-                { icon: <AlertTriangle size={14} />, label: "Critical Items", value: totalCritical.toString(), sub: "Require action" },
+                { icon: <Users size={14} />, label: "Total Students", value: systemHealth.totalStudents, sub: "+3.2% YoY", featured: false },
+                { icon: <Award size={14} />, label: "Total Teachers", value: systemHealth.totalTeachers, sub: "1:15 ratio", featured: false },
+                { icon: <Building2 size={14} />, label: "Schools", value: systemHealth.totalSchools, sub: "98% inspected", featured: false },
+                { icon: <AlertTriangle size={14} />, label: "Critical Items", value: totalCritical.toString(), sub: "Require action", featured: true },
               ].map((s) => (
-                <div key={s.label} className="rounded-xl bg-background/60 border border-border/50 p-3 space-y-1">
-                  <div className="flex items-center gap-1.5 text-muted-foreground">{s.icon}<span className="text-[9px] font-medium">{s.label}</span></div>
-                  <p className="text-lg font-extrabold text-foreground">{s.value}</p>
-                  <p className="text-[9px] text-muted-foreground">{s.sub}</p>
+                <div
+                  key={s.label}
+                  className={
+                    s.featured
+                      ? "rounded-xl bg-accent text-accent-foreground p-3 space-y-1 shadow-sm"
+                      : "rounded-xl bg-background/60 border border-border/50 p-3 space-y-1"
+                  }
+                >
+                  <div className={`flex items-center gap-1.5 ${s.featured ? "text-accent-foreground/80" : "text-muted-foreground"}`}>{s.icon}<span className="text-[9px] font-medium">{s.label}</span></div>
+                  <p className={`text-lg font-extrabold ${s.featured ? "text-accent-foreground" : "text-foreground"}`}>{s.value}</p>
+                  <p className={`text-[9px] ${s.featured ? "text-accent-foreground/80" : "text-muted-foreground"}`}>{s.sub}</p>
                 </div>
               ))}
             </div>

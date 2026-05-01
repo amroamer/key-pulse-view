@@ -1,5 +1,6 @@
 import { Download, Calendar, Filter } from "lucide-react";
 import khdaLogo from "@/assets/khda-logo.png";
+import dubaiGovLogo from "@/assets/dubai-gov-logo.png";
 
 interface DashboardHeaderProps {
   period: string;
@@ -13,11 +14,18 @@ const DashboardHeader = ({ period, onPeriodChange }: DashboardHeaderProps) => {
     <header className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div className="flex items-start gap-4">
-          <img
-            src={khdaLogo}
-            alt="KHDA — Dubai Knowledge"
-            className="h-12 sm:h-14 w-auto shrink-0 mt-1"
-          />
+          <div className="flex flex-col items-start gap-1.5 shrink-0">
+            <img
+              src={khdaLogo}
+              alt="KHDA — Dubai Knowledge"
+              className="h-14 sm:h-16 w-auto"
+            />
+            <img
+              src={dubaiGovLogo}
+              alt="Government of Dubai"
+              className="h-5 sm:h-6 w-auto opacity-80"
+            />
+          </div>
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground" style={{ lineHeight: 1.15 }}>
               Dubai Education Authority

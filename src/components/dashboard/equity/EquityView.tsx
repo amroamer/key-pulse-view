@@ -3,6 +3,7 @@ import { demographicGroups, equityDimensions, genderData, geoDistricts, inclusio
 import { TrendingUp, TrendingDown, Minus, MapPin, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from "recharts";
 import ScrollReveal from "../ScrollReveal";
+import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusBg = { green: "bg-[hsl(var(--status-green-bg))]", amber: "bg-[hsl(var(--status-amber-bg))]", red: "bg-[hsl(var(--status-red-bg))]" };
@@ -76,7 +77,7 @@ const EquityView = () => {
                 <BarChart data={gapData} layout="vertical" margin={{ top: 5, right: 20, left: 5, bottom: 0 }}>
                   <XAxis type="number" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={70} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} formatter={(v: number, _: string, p: any) => [`${v > 0 ? "+" : ""}${v} pts`, p.payload.full]} />
+                  <Tooltip contentStyle={tooltipContentStyle} itemStyle={tooltipItemStyle} labelStyle={tooltipLabelStyle} formatter={(v: number, _: string, p: any) => [`${v > 0 ? "+" : ""}${v} pts`, p.payload.full]} />
                   <ReferenceLine x={0} stroke="hsl(var(--border))" />
                   <Bar dataKey="gap" radius={[0, 4, 4, 0]} name="Gap" barSize={18}>
                     {gapData.map((d, i) => (<Cell key={i} fill={d.gap >= 0 ? "hsl(var(--primary))" : "hsl(var(--status-red-accent))"} />))}

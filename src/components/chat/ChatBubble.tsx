@@ -19,7 +19,7 @@ const ChatBubble = () => {
         <Button
           size="icon"
           aria-label="Open assistant"
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50"
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg z-50 bg-[hsl(var(--info))] hover:bg-[hsl(var(--info))]/90 text-[hsl(var(--info-foreground))]"
         >
           <MessageCircle className="h-6 w-6" />
         </Button>
