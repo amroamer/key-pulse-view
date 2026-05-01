@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardTabs, { type DashboardTab } from "@/components/dashboard/DashboardTabs";
 import StatusSummaryBar from "@/components/dashboard/StatusSummaryBar";
-import StrategicLanding from "@/components/dashboard/landing/StrategicLanding";
-import ExecutiveSummary from "@/components/dashboard/ExecutiveSummary";
-import StudentJourneyView from "@/components/dashboard/student/StudentJourneyView";
-import StudentProfileView from "@/components/dashboard/profile/StudentProfileView";
-import EquityView from "@/components/dashboard/equity/EquityView";
-import TeacherView from "@/components/dashboard/teacher/TeacherView";
-import QualityView from "@/components/dashboard/quality/QualityView";
-import EfficiencyView from "@/components/dashboard/efficiency/EfficiencyView";
+
+const StrategicLanding = lazy(() => import("@/components/dashboard/landing/StrategicLanding"));
+const ExecutiveSummary = lazy(() => import("@/components/dashboard/ExecutiveSummary"));
+const StudentJourneyView = lazy(() => import("@/components/dashboard/student/StudentJourneyView"));
+const StudentProfileView = lazy(() => import("@/components/dashboard/profile/StudentProfileView"));
+const EquityView = lazy(() => import("@/components/dashboard/equity/EquityView"));
+const TeacherView = lazy(() => import("@/components/dashboard/teacher/TeacherView"));
+const QualityView = lazy(() => import("@/components/dashboard/quality/QualityView"));
+const EfficiencyView = lazy(() => import("@/components/dashboard/efficiency/EfficiencyView"));
+
+const TabFallback = () => (
+  <div className="flex items-center justify-center py-24 text-sm text-muted-foreground">
+    Loading…
+  </div>
+);
 
 const Index = () => {
   const [period, setPeriod] = useState("Current Week");
@@ -35,7 +42,7 @@ const Index = () => {
         <DashboardHeader period={period} onPeriodChange={setPeriod} />
         <DashboardTabs active={activeTab} onChange={setActiveTab} />
         {activeTab !== "landing" && <StatusSummaryBar green={3} amber={6} red={3} />}
-        {renderTab()}
+        <Suspense fallback={<TabFallback />}>{renderTab()}</Suspense>
       </div>
     </div>
   );
