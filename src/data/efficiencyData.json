@@ -10,7 +10,7 @@
     { "category": "Research & Innovation", "allocated": 150, "spent": 68, "percent": 45, "status": "red" }
   ],
   "resourceMetrics": [
-    { "label": "Student-Teacher Ratio", "value": 18.2, "target": 15, "unit": ":1", "trend": "down", "status": "amber" },
+    { "label": "Student-Teacher Ratio", "value": 15, "target": 15, "unit": ":1", "trend": "down", "status": "green" },
     { "label": "Classroom Utilization", "value": 82, "target": 90, "unit": "%", "trend": "up", "status": "amber" },
     { "label": "Digital Device Ratio", "value": 0.6, "target": 1.0, "unit": ":1", "trend": "up", "status": "red" },
     { "label": "Library Access", "value": 72, "target": 95, "unit": "%", "trend": "flat", "status": "amber" },
@@ -53,7 +53,7 @@
   ],
   "efficiencyHeroMetrics": [
     { "label": "Total Budget", "value": "5.34B", "unit": "AED", "subtext": "FY 2025-26" },
-    { "label": "Execution Rate", "value": "68%", "unit": "", "subtext": "Target: 90–110%" },
+    { "label": "Execution Rate", "value": "84%", "unit": "", "subtext": "Target: 90–110%" },
     { "label": "Cost / Student", "value": "42K", "unit": "AED", "subtext": "vs 38K benchmark" },
     { "label": "ROI Index", "value": "72", "unit": "/100", "subtext": "+4 pts YoY" }
   ]

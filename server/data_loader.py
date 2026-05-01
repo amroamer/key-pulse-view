@@ -100,6 +100,20 @@ def _datasets() -> dict[str, Any]:
     }
 
 
+# Display-ready metadata for each strategic pillar. Used by status_summary()
+# so the model cites user-facing pillar names ("Access & Equity") instead of
+# internal dataset keys like `equity_inclusion`.
+PILLAR_REGISTRY: list[dict[str, str]] = [
+    {"key": "executive",  "name": "Executive Summary",       "slug": "pillar-executive",  "tab": "executive"},
+    {"key": "student",    "name": "Student Performance",     "slug": "pillar-student",    "tab": "student"},
+    {"key": "equity",     "name": "Access & Equity",         "slug": "pillar-equity",     "tab": "equity"},
+    {"key": "teacher",    "name": "Teacher Excellence",      "slug": "pillar-teacher",    "tab": "teacher"},
+    {"key": "quality",    "name": "Quality Assurance",       "slug": "pillar-quality",    "tab": "quality"},
+    {"key": "efficiency", "name": "Institutional Efficiency","slug": "pillar-efficiency", "tab": "efficiency"},
+]
+PILLAR_BY_KEY: dict[str, dict[str, str]] = {p["key"]: p for p in PILLAR_REGISTRY}
+
+
 PILLAR_TO_DATASETS: dict[str, list[str]] = {
     "executive": [
         "landing_system_health",
@@ -199,19 +213,69 @@ def filter_by_status(name: str, status: str) -> Any:
     return rows
 
 
+def _dataset_to_pillar_key(ds_name: str) -> str | None:
+    """Given a dataset name, return the canonical pillar key it belongs to.
+    Skips the landing/overview aliases that share datasets with executive."""
+    for key in PILLAR_BY_KEY:
+        if ds_name in PILLAR_TO_DATASETS.get(key, []):
+            return key
+    return None
+
+
 def status_summary(name: str | None = None) -> Any:
-    """Summarise red/amber/green counts for a dataset (or every dataset)."""
+    """Red/amber/green rollup for the dashboard.
+
+    With no argument: returns a pillar-level rollup using user-facing display
+    names + frontend slugs. The model should cite these names in its replies
+    and wrap them as `[Display Name](#kpi:slug)` links.
+
+    With a dataset name: returns counts for that specific dataset, enriched
+    with the parent pillar's display name + slug so links still work.
+    """
     data = _datasets()
+
     if name:
         if name not in data:
             return {"error": f"unknown dataset '{name}'"}
-        return _summarise(name, data[name])
-    out: dict[str, dict] = {}
-    for ds_name, ds in data.items():
-        summary = _summarise(ds_name, ds)
-        if summary:
-            out[ds_name] = summary
-    return out
+        summary = _summarise(name, data[name])
+        if summary is None:
+            return {"error": f"dataset '{name}' has no status fields"}
+        pillar_key = _dataset_to_pillar_key(name)
+        if pillar_key:
+            pillar = PILLAR_BY_KEY[pillar_key]
+            summary["pillar"] = {"name": pillar["name"], "slug": pillar["slug"]}
+        return summary
+
+    # Pillar-level rollup. Iterate the 6 canonical pillars (skip landing/
+    # overview aliases) so each dataset is counted exactly once.
+    rows: list[dict[str, Any]] = []
+    for pillar in PILLAR_REGISTRY:
+        ds_names = PILLAR_TO_DATASETS.get(pillar["key"], [])
+        red = amber = green = total = 0
+        for ds in ds_names:
+            if ds not in data:
+                continue
+            s = _summarise(ds, data[ds])
+            if not s:
+                continue
+            red += s["red"]
+            amber += s["amber"]
+            green += s["green"]
+            total += s["total"]
+        if total == 0:
+            continue
+        rows.append({
+            "name": pillar["name"],
+            "slug": pillar["slug"],
+            "tab": pillar["tab"],
+            "red": red,
+            "amber": amber,
+            "green": green,
+            "total": total,
+        })
+
+    rows.sort(key=lambda r: (-r["red"], -r["amber"], r["name"]))
+    return {"by_pillar": rows}
 
 
 def _summarise(name: str, ds: Any) -> dict | None:

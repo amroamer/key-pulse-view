@@ -4,6 +4,9 @@ import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp } from "lucide-
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
 import ScrollReveal from "../ScrollReveal";
 import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
+import { Tooltip as InfoTooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { scoreCardTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusPill = { green: "status-pill status-pill-green", amber: "status-pill status-pill-amber", red: "status-pill status-pill-red" };
@@ -16,6 +19,7 @@ const trendIcon = (t: "up" | "down" | "flat") => {
 const TeacherView = () => {
   const [showAllPD, setShowAllPD] = useState(false);
   const visiblePD = showAllPD ? pdPrograms : pdPrograms.slice(0, 4);
+  const { askAbout } = useDashboard();
 
   const retentionData = retentionCohorts.map((c) => ({
     year: c.year,
@@ -34,17 +38,26 @@ const TeacherView = () => {
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Teacher Workforce Overview</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {teacherHeroMetrics.map((m) => (
-              <div key={m.label} className="rounded-xl border border-border bg-card p-3 space-y-1">
-                <p className="text-[10px] text-muted-foreground font-medium">{m.label}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-extrabold text-foreground">{m.value}</span>
-                  {trendIcon(m.trend)}
-                </div>
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-muted-foreground">Target: {m.target}</span>
-                  <span className={`font-medium ${m.status === "green" ? "text-[hsl(var(--status-green-text))]" : m.status === "amber" ? "text-[hsl(var(--status-amber-text))]" : "text-[hsl(var(--status-red-text))]"}`}>{m.detail}</span>
-                </div>
-              </div>
+              <InfoTooltip key={m.label} delayDuration={250}>
+                <TooltipTrigger asChild>
+                  <div onClick={() => askAbout(`Teacher ${m.label} — value and one-line context.`)} className="rounded-xl border border-border bg-card p-3 space-y-1 cursor-pointer">
+                    <p className="text-[10px] text-muted-foreground font-medium">{m.label}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-extrabold text-foreground">{m.value}</span>
+                      {trendIcon(m.trend)}
+                    </div>
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="text-muted-foreground">Target: {m.target}</span>
+                      <span className={`font-medium ${m.status === "green" ? "text-[hsl(var(--status-green-text))]" : m.status === "amber" ? "text-[hsl(var(--status-amber-text))]" : "text-[hsl(var(--status-red-text))]"}`}>{m.detail}</span>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-sm leading-snug">
+                    {scoreCardTooltip({ label: m.label, score: m.value, target: m.target, status: m.status, detail: m.detail })}
+                  </p>
+                </TooltipContent>
+              </InfoTooltip>
             ))}
           </div>
         </div>

@@ -3,6 +3,9 @@ import { schoolRatings, recentInspections, complianceAreas, improvementTrajector
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Equal } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import ScrollReveal from "../ScrollReveal";
+import { Tooltip as InfoTooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { scoreCardTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusBg = { green: "bg-[hsl(var(--status-green-bg))]", amber: "bg-[hsl(var(--status-amber-bg))]", red: "bg-[hsl(var(--status-red-bg))]" };
@@ -15,6 +18,7 @@ const trajectoryIcon = (t: string) => {
 
 const QualityView = () => {
   const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
+  const { askAbout } = useDashboard();
 
   const totalSchools = schoolRatings.reduce((a, b) => a + b.count, 0);
 
@@ -26,14 +30,23 @@ const QualityView = () => {
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Quality Assurance Overview</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {qualityHeroMetrics.map((m) => (
-              <div key={m.label} className="rounded-xl border border-border bg-card p-3 space-y-1">
-                <p className="text-[10px] text-muted-foreground font-medium">{m.label}</p>
-                <span className="text-2xl font-extrabold text-foreground">{m.value}</span>
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-muted-foreground">Target: {m.target}</span>
-                  <div className={`w-2 h-2 rounded-full ${statusDot[m.status]}`} />
-                </div>
-              </div>
+              <InfoTooltip key={m.label} delayDuration={250}>
+                <TooltipTrigger asChild>
+                  <div onClick={() => askAbout(`${m.label} — value and one-line context.`)} className="rounded-xl border border-border bg-card p-3 space-y-1 cursor-pointer">
+                    <p className="text-[10px] text-muted-foreground font-medium">{m.label}</p>
+                    <span className="text-2xl font-extrabold text-foreground">{m.value}</span>
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="text-muted-foreground">Target: {m.target}</span>
+                      <div className={`w-2 h-2 rounded-full ${statusDot[m.status]}`} />
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-sm leading-snug">
+                    {scoreCardTooltip({ label: m.label, score: m.value, target: m.target, status: m.status })}
+                  </p>
+                </TooltipContent>
+              </InfoTooltip>
             ))}
           </div>
         </div>

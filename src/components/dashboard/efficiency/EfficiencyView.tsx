@@ -3,6 +3,9 @@ import { TrendingUp, TrendingDown, Minus, DollarSign, AlertCircle } from "lucide
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import ScrollReveal from "../ScrollReveal";
 import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
+import { Tooltip as InfoTooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { simpleTileTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusBg = { green: "bg-[hsl(var(--status-green-bg))]", amber: "bg-[hsl(var(--status-amber-bg))]", red: "bg-[hsl(var(--status-red-bg))]" };
@@ -24,6 +27,7 @@ const budgetChartData = budgetCategories.map((b) => ({
 const EfficiencyView = () => {
   const totalAllocated = budgetCategories.reduce((a, b) => a + b.allocated, 0);
   const totalSpent = budgetCategories.reduce((a, b) => a + b.spent, 0);
+  const { askAbout } = useDashboard();
 
   return (
     <div className="space-y-6">
@@ -33,11 +37,20 @@ const EfficiencyView = () => {
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Institutional Efficiency</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {efficiencyHeroMetrics.map((m) => (
-              <div key={m.label} className="rounded-xl border border-border bg-card p-3 space-y-1">
-                <div className="flex items-center gap-1.5 text-muted-foreground"><DollarSign size={12} /><span className="text-[10px] font-medium">{m.label}</span></div>
-                <div className="flex items-baseline gap-1"><span className="text-2xl font-extrabold text-foreground">{m.value}</span>{m.unit && <span className="text-xs text-muted-foreground">{m.unit}</span>}</div>
-                <p className="text-[10px] text-muted-foreground">{m.subtext}</p>
-              </div>
+              <InfoTooltip key={m.label} delayDuration={250}>
+                <TooltipTrigger asChild>
+                  <div onClick={() => askAbout(`${m.label} — value and one-line context.`)} className="rounded-xl border border-border bg-card p-3 space-y-1 cursor-pointer">
+                    <div className="flex items-center gap-1.5 text-muted-foreground"><DollarSign size={12} /><span className="text-[10px] font-medium">{m.label}</span></div>
+                    <div className="flex items-baseline gap-1"><span className="text-2xl font-extrabold text-foreground">{m.value}</span>{m.unit && <span className="text-xs text-muted-foreground">{m.unit}</span>}</div>
+                    <p className="text-[10px] text-muted-foreground">{m.subtext}</p>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-sm leading-snug">
+                    {simpleTileTooltip({ label: m.label, value: `${m.value}${m.unit ? ` ${m.unit}` : ""}`, sub: m.subtext })}
+                  </p>
+                </TooltipContent>
+              </InfoTooltip>
             ))}
           </div>
         </div>

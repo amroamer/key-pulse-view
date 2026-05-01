@@ -59,4 +59,4 @@ curl http://localhost:8765/api/health
 ## Endpoints
 
 - `GET /api/health` — liveness + currently configured model
-- `POST /api/chat` — streams Server-Sent Events. Body: `{ messages: [{role, content}], context?: { activeTab, selectedStudent? } }`. Each event has shape `{ type: "chunk" | "done" | "error", ... }`.
+- `POST /api/chat` — streams Server-Sent Events. Body: `{ messages: [{role, content}], context?: { activeTab } }`. Each event has shape `{ type: "chunk" | "done" | "error", ... }`.

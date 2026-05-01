@@ -1,11 +1,11 @@
 {
   "schoolRatings": [
-    { "rating": "Outstanding", "count": 18, "percent": 10, "color": "hsl(155, 75%, 35%)", "prevPercent": 8 },
-    { "rating": "Very Good", "count": 38, "percent": 21, "color": "hsl(155, 60%, 50%)", "prevPercent": 19 },
-    { "rating": "Good", "count": 45, "percent": 25, "color": "hsl(155, 45%, 60%)", "prevPercent": 24 },
-    { "rating": "Acceptable", "count": 52, "percent": 29, "color": "hsl(36, 100%, 50%)", "prevPercent": 31 },
-    { "rating": "Weak", "count": 22, "percent": 12, "color": "hsl(15, 80%, 50%)", "prevPercent": 14 },
-    { "rating": "Very Weak", "count": 5, "percent": 3, "color": "hsl(0, 65%, 51%)", "prevPercent": 4 }
+    { "rating": "Outstanding", "count": 22, "percent": 10, "color": "hsl(155, 75%, 35%)", "prevPercent": 8 },
+    { "rating": "Very Good", "count": 46, "percent": 21, "color": "hsl(155, 60%, 50%)", "prevPercent": 19 },
+    { "rating": "Good", "count": 55, "percent": 25, "color": "hsl(155, 45%, 60%)", "prevPercent": 24 },
+    { "rating": "Acceptable", "count": 62, "percent": 29, "color": "hsl(36, 100%, 50%)", "prevPercent": 31 },
+    { "rating": "Weak", "count": 26, "percent": 12, "color": "hsl(15, 80%, 50%)", "prevPercent": 14 },
+    { "rating": "Very Weak", "count": 7, "percent": 3, "color": "hsl(0, 65%, 51%)", "prevPercent": 4 }
   ],
   "recentInspections": [
     { "school": "Dubai International Academy", "type": "Private", "rating": "Outstanding", "prevRating": "Very Good", "date": "Mar 2026", "status": "green", "keyFindings": ["Exceptional STEM program", "Strong inclusion practices"] },
@@ -33,7 +33,7 @@
     { "school": "Emirates National School", "ratings": [{ "year": "2023", "score": 66 }, { "year": "2024", "score": 66 }, { "year": "2025", "score": 67 }, { "year": "2026", "score": 66 }], "currentStatus": "amber", "trajectory": "stable" }
   ],
   "qualityHeroMetrics": [
-    { "label": "Schools Inspected", "value": "180", "target": "180", "percent": 100, "status": "green" },
+    { "label": "Schools Inspected", "value": "218", "target": "218", "percent": 100, "status": "green" },
     { "label": "Good or Better", "value": "56%", "target": "75%", "percent": 74, "status": "red" },
     { "label": "Compliance Score", "value": "83%", "target": "95%", "percent": 87, "status": "amber" },
     { "label": "Improving Schools", "value": "42%", "target": "60%", "percent": 70, "status": "amber" }

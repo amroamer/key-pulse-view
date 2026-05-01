@@ -94,9 +94,11 @@ TOOL_SCHEMAS: list[dict] = [
         "function": {
             "name": "get_pillar_data",
             "description": (
-                "Return all datasets for a dashboard pillar/tab. Use this when "
-                "the user asks 'what's on the X tab?' or for an overview of one "
-                "area. Pillars: " + ", ".join(PILLAR_NAMES) + "."
+                "Return all datasets for a dashboard pillar/tab. Use for "
+                "tab-overview questions like \"what's on the X tab?\" — NOT "
+                "for single-metric questions, which should use get_dataset or "
+                "get_kpi instead. "
+                "Pillars: " + ", ".join(PILLAR_NAMES) + "."
             ),
             "parameters": {
                 "type": "object",
@@ -116,10 +118,14 @@ TOOL_SCHEMAS: list[dict] = [
         "function": {
             "name": "get_dataset",
             "description": (
-                "Return one specific dataset by name (e.g. 'equity_dimensions', "
-                "'quality_school_ratings'). Use this when you need a single "
-                "table rather than a whole pillar. Call `list_datasets` first if "
-                "you don't know the name."
+                "Return one specific dataset by name (e.g. "
+                "'landing_system_health', 'equity_dimensions', "
+                "'quality_school_ratings'). Use when you need a single table "
+                "rather than a whole pillar — including for hero-metric "
+                "questions like Total Schools, Total Students, Total "
+                "Teachers, and System Score, which all live in "
+                "'landing_system_health'. "
+                "Call `list_datasets` first if you don't know the name."
             ),
             "parameters": {
                 "type": "object",
@@ -161,15 +167,21 @@ TOOL_SCHEMAS: list[dict] = [
         "function": {
             "name": "status_summary",
             "description": (
-                "Return red/amber/green counts. If `dataset` is omitted, returns "
-                "counts for every dataset that has status fields."
+                "Red/amber/green rollup. With no argument, returns "
+                "`{by_pillar: [{name, tab, red, amber, green, total}]}` "
+                "sorted by red count desc, using user-facing pillar names. "
+                "With `dataset`, returns counts for that single dataset plus "
+                "its parent pillar's name. Use the no-arg call for "
+                "'how are we doing overall?' or 'where are the biggest red KPIs?' "
+                "questions — never echo internal dataset names like "
+                "'equity_inclusion' to the user."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "dataset": {
                         "type": "string",
-                        "description": "Optional dataset name to summarise.",
+                        "description": "Optional dataset name (drill-down).",
                     },
                 },
             },
@@ -181,7 +193,8 @@ TOOL_SCHEMAS: list[dict] = [
             "name": "get_kpi",
             "description": (
                 "Return one executive-scoreboard KPI's full details by id "
-                "(e.g. 'learning-gain', 'enrollment')."
+                "(e.g. 'learning-gain', 'enrollment'). Use for single-KPI "
+                "questions on the executive scoreboard."
             ),
             "parameters": {
                 "type": "object",
@@ -199,7 +212,8 @@ TOOL_SCHEMAS: list[dict] = [
             "description": (
                 "Fuzzy text search across every dataset. Use when the user asks "
                 "about a topic that might appear in any pillar (a school name, "
-                "a subject, a metric label, etc.)."
+                "a subject, a metric label, etc.) and you don't know which "
+                "dataset to query."
             ),
             "parameters": {
                 "type": "object",

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { TrendingUp, TrendingDown, Info, MapPin, Users, MoreVertical } from "lucide-react";
 import Sparkline from "./Sparkline";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { kpiTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 export type AmpelaeStatus = "green" | "amber" | "red";
 
@@ -30,6 +33,11 @@ const statusLabels: Record<AmpelaeStatus, string> = {
 
 const KpiCard = ({ kpi }: { kpi: KpiData }) => {
   const [expanded, setExpanded] = useState(false);
+  const { askAbout } = useDashboard();
+  // Click anywhere on the card → pre-fill the chat with a question. The
+  // small action-bar buttons (Info / Geo / Demo) stop propagation so they
+  // don't double-fire.
+  const stop = (e: React.MouseEvent) => e.stopPropagation();
 
   const cardStatusClass = {
     green: "card-status-green",
@@ -50,8 +58,11 @@ const KpiCard = ({ kpi }: { kpi: KpiData }) => {
   }[kpi.status];
 
   return (
+    <Tooltip delayDuration={250}>
+      <TooltipTrigger asChild>
     <div
-      className={`group rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-out hover:-translate-y-0.5 ${cardStatusClass} overflow-hidden`}
+      onClick={() => askAbout(`${kpi.name} — current value, target, and status in 2 sentences.`)}
+      className={`group rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-out hover:-translate-y-0.5 ${cardStatusClass} overflow-hidden cursor-pointer`}
       style={{ minHeight: 340 }}
     >
       {/* Header */}
@@ -104,21 +115,21 @@ const KpiCard = ({ kpi }: { kpi: KpiData }) => {
       </div>
 
       {/* Action bar */}
-      <div className="flex items-center gap-1 px-4 pb-3 pt-1 border-t border-border/30">
+      <div onClick={stop} className="flex items-center gap-1 px-4 pb-3 pt-1 border-t border-border/30">
         <button
-          onClick={() => setExpanded(!expanded)}
+          onClick={(e) => { stop(e); setExpanded(!expanded); }}
           className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors active:scale-95"
           aria-label="More info"
         >
           <Info size={14} /> Info
         </button>
-        <button className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors active:scale-95" aria-label="Geo view">
+        <button onClick={stop} className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors active:scale-95" aria-label="Geo view">
           <MapPin size={14} /> Geo
         </button>
-        <button className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors active:scale-95" aria-label="Demographics">
+        <button onClick={stop} className="flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors active:scale-95" aria-label="Demographics">
           <Users size={14} /> Demo
         </button>
-        <button className="ml-auto flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors active:scale-95" aria-label="More options">
+        <button onClick={stop} className="ml-auto flex items-center gap-1 rounded-md px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors active:scale-95" aria-label="More options">
           <MoreVertical size={14} />
         </button>
       </div>
@@ -132,6 +143,11 @@ const KpiCard = ({ kpi }: { kpi: KpiData }) => {
         </div>
       )}
     </div>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs">
+        <p className="text-sm leading-snug">{kpiTooltip(kpi)}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 };
 

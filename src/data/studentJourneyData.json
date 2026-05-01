@@ -1,7 +1,7 @@
 {
   "journeyHeroMetrics": [
     { "label": "Total Enrollment", "value": "361.5K", "iconKey": "Users", "sub": "+3.2% YoY" },
-    { "label": "System Avg Score", "value": "74", "iconKey": "BookOpen", "sub": "Target: 80" },
+    { "label": "System Avg Score", "value": "74", "iconKey": "BookOpen", "sub": "Target: 85" },
     { "label": "Overall Completion", "value": "88%", "iconKey": "GraduationCap", "sub": "Target: 95%" },
     { "label": "Critical Drop-offs", "value": "2", "iconKey": "AlertTriangle", "sub": "Middle → Higher" }
   ],

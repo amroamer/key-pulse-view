@@ -4,6 +4,8 @@ import { TrendingUp, TrendingDown, Minus, MapPin, Users, ChevronDown, ChevronUp 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from "recharts";
 import ScrollReveal from "../ScrollReveal";
 import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
+import { Tooltip as InfoTooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { scoreCardTooltip } from "@/lib/tooltips";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusBg = { green: "bg-[hsl(var(--status-green-bg))]", amber: "bg-[hsl(var(--status-amber-bg))]", red: "bg-[hsl(var(--status-red-bg))]" };
@@ -29,16 +31,25 @@ const EquityView = () => {
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Equity Scorecard</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {equityDimensions.map((d) => (
-              <button key={d.id} onClick={() => setExpandedDim(expandedDim === d.id ? null : d.id)} className={`rounded-xl border-2 p-3 text-left transition-all hover:shadow-sm cursor-pointer ${expandedDim === d.id ? "ring-2 ring-primary shadow-md" : ""} ${statusBg[d.status]} border-[hsl(var(--status-${d.status}-accent))]`} style={{ borderColor: d.status === "green" ? "hsl(var(--status-green-accent))" : d.status === "amber" ? "hsl(var(--status-amber-accent))" : "hsl(var(--status-red-accent))" }}>
-                <p className="text-[10px] text-muted-foreground font-medium">{d.label}</p>
-                <div className="flex items-end justify-between mt-1">
-                  <span className="text-2xl font-extrabold text-foreground">{d.score}</span>
-                  <span className="text-[10px] text-muted-foreground">/ {d.target}</span>
-                </div>
-                <div className="h-1.5 rounded-full bg-background/60 overflow-hidden mt-2">
-                  <div className={`h-full rounded-full ${statusDot[d.status]}`} style={{ width: `${(d.score / d.target) * 100}%` }} />
-                </div>
-              </button>
+              <InfoTooltip key={d.id} delayDuration={250}>
+                <TooltipTrigger asChild>
+                  <button onClick={() => setExpandedDim(expandedDim === d.id ? null : d.id)} className={`rounded-xl border-2 p-3 text-left transition-all hover:shadow-sm cursor-pointer ${expandedDim === d.id ? "ring-2 ring-primary shadow-md" : ""} ${statusBg[d.status]}`} style={{ borderColor: d.status === "green" ? "hsl(var(--status-green-accent))" : d.status === "amber" ? "hsl(var(--status-amber-accent))" : "hsl(var(--status-red-accent))" }}>
+                    <p className="text-[10px] text-muted-foreground font-medium">{d.label}</p>
+                    <div className="flex items-end justify-between mt-1">
+                      <span className="text-2xl font-extrabold text-foreground">{d.score}</span>
+                      <span className="text-[10px] text-muted-foreground">/ {d.target}</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-background/60 overflow-hidden mt-2">
+                      <div className={`h-full rounded-full ${statusDot[d.status]}`} style={{ width: `${(d.score / d.target) * 100}%` }} />
+                    </div>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="text-sm leading-snug">
+                    {scoreCardTooltip({ label: d.label, score: d.score, target: d.target, status: d.status })}
+                  </p>
+                </TooltipContent>
+              </InfoTooltip>
             ))}
           </div>
 

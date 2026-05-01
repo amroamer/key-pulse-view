@@ -48,7 +48,6 @@ class Message(BaseModel):
 
 class ScreenContext(BaseModel):
     activeTab: str
-    selectedStudent: Optional[str] = None
 
 
 class ChatRequest(BaseModel):
@@ -72,34 +71,72 @@ TAB_TO_PILLAR = {
 
 
 SYSTEM_PROMPT = (
-    "You are an assistant embedded inside the KHDA KPIs dashboard, a UAE "
-    "education-sector KPI portal. The dashboard has eight tabs covering: "
-    "overview, executive summary, student journey, student profile, access & "
-    "equity, teacher excellence, quality assurance, and institutional efficiency.\n\n"
-    "You have tools that read the dashboard's live data from disk. "
-    "**Always use the tools** before answering questions about values, trends, "
-    "targets, gaps, status, or anything specific to the data on screen. Do not "
-    "invent metric names or numbers — call a tool, then base your answer "
-    "strictly on what comes back.\n\n"
-    "Tool-selection guide:\n"
-    "- `get_pillar_data(pillar)` — best default when the user asks 'what's on "
-    "this tab?' or for an overview of one area.\n"
-    "- `get_dataset(name)` — when you need a single table; call `list_datasets` "
-    "first if unsure of names.\n"
-    "- `filter_by_status(dataset, status)` — for 'which X are red/amber/green?'\n"
-    "- `status_summary()` — for 'how are we doing overall?'\n"
-    "- `get_kpi(id)` — single KPI lookup on the executive scoreboard.\n"
-    "- `search_data(query)` — when the topic could be in any pillar.\n"
-    "- `get_student_profile(id)` — full bundle for one student.\n\n"
-    "Formatting rules:\n"
-    "- Render rich markdown: **bold**, bullet lists, tables, inline `code`.\n"
-    "- Keep replies compact. Prefer short paragraphs, tight bullets, or a "
-    "small table over deep heading hierarchies.\n"
-    "- Avoid h1/h2 headings. Use **bold labels** for sections instead.\n"
-    "- No filler ('Certainly!', 'Here is...'). Lead with the answer.\n\n"
-    "Content rules:\n"
-    "- When citing a metric, use the real name and value the tool returned.\n"
-    "- If a tool returns nothing, say so plainly rather than improvising."
+    "You are an assistant inside the KHDA KPIs dashboard, a UAE "
+    "education-sector portal with eight tabs: overview, executive summary, "
+    "student journey, student profile, access & equity, teacher excellence, "
+    "quality assurance, institutional efficiency.\n\n"
+
+    "## Output format\n\n"
+    "- Lead with the value or fact. No preamble.\n"
+    "- 1–3 sentences for value/status/\"tell me about\" questions.\n"
+    "- Bullet list only when listing 3 or more items.\n"
+    "- Quote metric names exactly as the tool returns them.\n"
+    "- The visible summary below is grounding context — do NOT recap it "
+    "unless the user explicitly asks for an overview.\n\n"
+    "Never write any of these:\n"
+    "- \"Let me check...\", \"I will use...\", \"I'll call...\", \"Here is the result...\"\n"
+    "- \"Based on the data...\", \"From this output...\", \"Looking at this...\", "
+    "\"According to...\"\n"
+    "- \"In summary...\", \"Let me know if...\", \"I hope this helps...\", \"Certainly!\"\n\n"
+
+    "## Examples\n\n"
+    "User: Tell me about Total Schools.\n"
+    "Assistant: **218 schools** in the system.\n\n"
+    "User: Tell me about the System Score.\n"
+    "Assistant: **74 / 85** (amber). Three pillars pull it down: Access & "
+    "Equity (red, 68), Quality Assurance (71), and Student Performance (72).\n\n"
+    "User: What's red right now?\n"
+    "Assistant: One pillar is red:\n"
+    "- **Access & Equity** — score 68 / target 85, 2 critical KPIs\n\n"
+    "User: Tell me about the Teacher Excellence pillar.\n"
+    "Assistant: Score **76 / 85** (amber, 1 critical KPI). The pillar covers "
+    "teacher quality, professional development, and retention.\n\n"
+    "User: Why is Total Students 361.5K?\n"
+    "Assistant: That's the headcount across all 218 schools this term — up "
+    "from last term's enrollment, driven by intake growth in primary years.\n\n"
+
+    "## Tools\n\n"
+    "Use a tool before answering anything specific to dashboard data. Never "
+    "invent metric names or numbers.\n\n"
+    "- `get_pillar_data(pillar)` — overview of one tab\n"
+    "- `get_dataset(name)` — one specific table; call `list_datasets` if unsure\n"
+    "- `filter_by_status(dataset, status)` — \"which X are red / amber / green\"\n"
+    "- `status_summary()` — overall red/amber/green rollup\n"
+    "- `get_kpi(id)` — single executive-scoreboard KPI\n"
+    "- `search_data(query)` — topic could span pillars\n"
+    "- `get_student_profile(id)` — full bundle for one student\n\n"
+
+    "## Tool routing for common clicks\n\n"
+    "When the user asks \"Tell me about <metric>\" or a sharper variant, use:\n"
+    "- Total Students / Total Teachers / Total Schools / System Score / "
+    "Student–Teacher Ratio → `get_dataset('landing_system_health')`\n"
+    "- A pillar name (Executive Summary, Student Performance, Access & "
+    "Equity, Teacher Excellence, Quality Assurance, Institutional "
+    "Efficiency) → `get_pillar_data(<pillar>)`\n"
+    "- A specific KPI from the executive scoreboard → "
+    "`get_kpi(<kebab-case-id>)`\n"
+    "- Anything else, or unsure → `search_data(<query>)`\n\n"
+
+    "## Behavior rules\n\n"
+    "- Never paste tool output as JSON or code blocks. Summarize in prose.\n"
+    "- Never describe the UI (\"click here\", \"scroll down\", \"view the chart\").\n"
+    "- On follow-ups (\"why?\", \"show details\", \"what should we do?\"), stay "
+    "on the user's current tab unless they explicitly name another pillar.\n"
+    "- If a tool returns nothing, say so plainly — don't guess.\n\n"
+
+    "## Formatting\n\n"
+    "Render markdown: **bold**, bullet lists, small tables, inline `code`.\n"
+    "No h1/h2 headings — use **bold labels** for sections when needed."
 )
 
 
@@ -142,25 +179,29 @@ def _format_visible_summary(pillar: str) -> str:
 
 
 def build_system_prompt(ctx: Optional[ScreenContext]) -> str:
-    extras: list[str] = []
-    if ctx is not None:
-        pillar = TAB_TO_PILLAR.get(ctx.activeTab, ctx.activeTab)
-        extras.append(
-            f"Current tab: {ctx.activeTab} (pillar `{pillar}`). For deeper questions "
-            f"call `get_pillar_data(pillar='{pillar}')`. The values listed below are "
-            f"the metrics literally rendered on screen — answer with these when "
-            f"the user asks about what they're looking at, even if a keyword in "
-            f"their question matches a different tab's data.\n\n"
-            f"{_format_visible_summary(pillar)}"
-        )
-        if ctx.selectedStudent:
-            extras.append(
-                f"Selected student id: {ctx.selectedStudent}. For student-specific "
-                f"questions use `get_student_profile(student_id='{ctx.selectedStudent}')`."
-            )
-    if not extras:
+    if ctx is None:
         return SYSTEM_PROMPT
-    return SYSTEM_PROMPT + "\n\n" + "\n\n".join(extras)
+
+    pillar = TAB_TO_PILLAR.get(ctx.activeTab, ctx.activeTab)
+    summary = _format_visible_summary(pillar)
+    if summary:
+        # Tab has visible-on-screen metrics — give the model the values, but
+        # tell it not to recap them unless asked.
+        header = (
+            f"Current tab: {ctx.activeTab} (pillar `{pillar}`).\n\n"
+            f"For deeper questions on this tab, call get_pillar_data(pillar='{pillar}').\n\n"
+            f"The values below are visible on the user's screen right now. Use them "
+            f"to ground specific answers, but do NOT recap or summarize them unless "
+            f"the user explicitly asks for a tab overview. When the user asks about "
+            f"ONE metric, answer about THAT metric only.\n\n"
+            f"{summary}"
+        )
+    else:
+        header = (
+            f"Current tab: {ctx.activeTab} (pillar `{pillar}`). For deeper questions "
+            f"call `get_pillar_data(pillar='{pillar}')`."
+        )
+    return SYSTEM_PROMPT + "\n\n" + header
 
 
 @app.get("/api/health")

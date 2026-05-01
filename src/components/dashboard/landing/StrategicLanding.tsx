@@ -1,7 +1,10 @@
 import { type DashboardTab } from "../DashboardTabs";
-import { LayoutDashboard, GraduationCap, Scale, Award, ShieldCheck, Building2, Users, ArrowRight, TrendingUp, Target, AlertTriangle, ChevronRight } from "lucide-react";
+import { LayoutDashboard, GraduationCap, Scale, Award, ShieldCheck, Building2, Users, ArrowRight, Target, AlertTriangle, ChevronRight } from "lucide-react";
 import ScrollReveal from "../ScrollReveal";
 import { systemHealth, strategicPillars as pillarSummaries, systemFlow, type StrategicPillarSummary } from "@/data/landingData";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { simpleTileTooltip, scoreCardTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 interface StrategicLandingProps {
   onNavigate: (tab: DashboardTab) => void;
@@ -26,6 +29,7 @@ const strategicPillars: (StrategicPillarSummary & { id: DashboardTab; icon: Reac
 const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
   const overallScore = Math.round(strategicPillars.reduce((a, p) => a + p.score, 0) / strategicPillars.length);
   const totalCritical = strategicPillars.reduce((a, p) => a + p.critical, 0);
+  const { askAbout } = useDashboard();
 
   return (
     <div className="space-y-6">
@@ -47,25 +51,34 @@ const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
                 </p>
               </div>
               <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="relative w-20 h-20">
-                    <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
-                      <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(var(--border))" strokeWidth="2.5" />
-                      <circle
-                        cx="18" cy="18" r="15.9" fill="none"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth="2.5"
-                        strokeDasharray={`${(overallScore / 100) * 100} 100`}
-                        strokeLinecap="round"
-                        className="transition-all duration-1000"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xl font-extrabold text-foreground">{overallScore}</span>
+                <Tooltip delayDuration={250}>
+                  <TooltipTrigger asChild>
+                    <div onClick={() => askAbout(`Why is the System Score ${overallScore}?`)} className="text-center cursor-pointer">
+                      <div className="relative w-20 h-20">
+                        <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(var(--border))" strokeWidth="2.5" />
+                          <circle
+                            cx="18" cy="18" r="15.9" fill="none"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth="2.5"
+                            strokeDasharray={`${(overallScore / 100) * 100} 100`}
+                            strokeLinecap="round"
+                            className="transition-all duration-1000"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xl font-extrabold text-foreground">{overallScore}</span>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground font-medium mt-1">System Score</p>
                     </div>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground font-medium mt-1">System Score</p>
-                </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <p className="text-sm leading-snug">
+                      {simpleTileTooltip({ label: "System Score", value: overallScore, sub: "out of 100" })}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </div>
 
@@ -77,18 +90,27 @@ const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
                 { icon: <Building2 size={14} />, label: "Schools", value: systemHealth.totalSchools, sub: "98% inspected", featured: false },
                 { icon: <AlertTriangle size={14} />, label: "Critical Items", value: totalCritical.toString(), sub: "Require action", featured: true },
               ].map((s) => (
-                <div
-                  key={s.label}
-                  className={
-                    s.featured
-                      ? "rounded-xl bg-accent text-accent-foreground p-3 space-y-1 shadow-sm"
-                      : "rounded-xl bg-background/60 border border-border/50 p-3 space-y-1"
-                  }
-                >
-                  <div className={`flex items-center gap-1.5 ${s.featured ? "text-accent-foreground/80" : "text-muted-foreground"}`}>{s.icon}<span className="text-[9px] font-medium">{s.label}</span></div>
-                  <p className={`text-lg font-extrabold ${s.featured ? "text-accent-foreground" : "text-foreground"}`}>{s.value}</p>
-                  <p className={`text-[9px] ${s.featured ? "text-accent-foreground/80" : "text-muted-foreground"}`}>{s.sub}</p>
-                </div>
+                <Tooltip key={s.label} delayDuration={250}>
+                  <TooltipTrigger asChild>
+                    <div
+                      onClick={() => askAbout(`${s.label} — value and one-line context.`)}
+                      className={
+                        s.featured
+                          ? "rounded-xl bg-accent text-accent-foreground p-3 space-y-1 shadow-sm cursor-pointer"
+                          : "rounded-xl bg-background/60 border border-border/50 p-3 space-y-1 cursor-pointer"
+                      }
+                    >
+                      <div className={`flex items-center gap-1.5 ${s.featured ? "text-accent-foreground/80" : "text-muted-foreground"}`}>{s.icon}<span className="text-[9px] font-medium">{s.label}</span></div>
+                      <p className={`text-lg font-extrabold ${s.featured ? "text-accent-foreground" : "text-foreground"}`}>{s.value}</p>
+                      <p className={`text-[9px] ${s.featured ? "text-accent-foreground/80" : "text-muted-foreground"}`}>{s.sub}</p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <p className="text-sm leading-snug">
+                      {simpleTileTooltip({ label: s.label, value: s.value, sub: s.sub })}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
               ))}
             </div>
           </div>
@@ -107,8 +129,9 @@ const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
             {strategicPillars.map((pillar) => {
               const gapPercent = Math.round(((pillar.target - pillar.score) / pillar.target) * 100);
               return (
+                <Tooltip key={pillar.id} delayDuration={250}>
+                  <TooltipTrigger asChild>
                 <button
-                  key={pillar.id}
                   onClick={() => onNavigate(pillar.id)}
                   className={`group relative rounded-xl border-2 p-4 text-left transition-all duration-200 hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] ${
                     pillar.status === "green"
@@ -171,6 +194,13 @@ const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
                     <ChevronRight size={14} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <p className="text-sm leading-snug">
+                      {scoreCardTooltip({ label: pillar.title, score: pillar.score, target: pillar.target, status: pillar.status, detail: pillar.insight })}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
               );
             })}
           </div>

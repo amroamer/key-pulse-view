@@ -1,6 +1,9 @@
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { executiveKpis } from "@/data/kpiData";
 import highlights from "@/data/heroHighlights.json";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { kpiTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 /**
  * BCG-style hero strip: 4 headline metrics pulled from KPIs,
@@ -8,9 +11,10 @@ import highlights from "@/data/heroHighlights.json";
  */
 
 const HeroMetrics = () => {
+  const { askAbout } = useDashboard();
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      {highlights.map((h, i) => {
+      {highlights.map((h) => {
         const kpi = executiveKpis.find((k) => k.id === h.id)!;
         const isUp = kpi.trendDirection === "up";
         const statusBorder = {
@@ -20,9 +24,11 @@ const HeroMetrics = () => {
         }[kpi.status];
 
         return (
+          <Tooltip key={h.id} delayDuration={250}>
+            <TooltipTrigger asChild>
           <div
-            key={h.id}
-            className={`relative bg-card rounded-xl border border-border border-l-4 ${statusBorder} p-5 shadow-sm hover:shadow-md transition-shadow duration-200 group`}
+            onClick={() => askAbout(`${kpi.name} — value and one-line context.`)}
+            className={`relative bg-card rounded-xl border border-border border-l-4 ${statusBorder} p-5 shadow-sm hover:shadow-md transition-shadow duration-200 group cursor-pointer`}
           >
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{h.label}</p>
             <div className="flex items-baseline gap-2">
@@ -51,6 +57,11 @@ const HeroMetrics = () => {
               </div>
             </div>
           </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <p className="text-sm leading-snug">{kpiTooltip(kpi)}</p>
+            </TooltipContent>
+          </Tooltip>
         );
       })}
     </div>

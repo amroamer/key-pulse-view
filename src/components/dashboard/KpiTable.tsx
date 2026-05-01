@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { TrendingUp, TrendingDown, ChevronDown, ExternalLink } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import Sparkline from "./Sparkline";
 import { executiveKpis } from "@/data/kpiData";
 import type { AmpelaeStatus } from "./KpiCard";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { kpiTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 const statusDot: Record<AmpelaeStatus, string> = {
   green: "bg-dashboard-green",
@@ -19,8 +22,8 @@ const statusLabel: Record<AmpelaeStatus, string> = {
 type SortKey = "name" | "status" | "gap" | "trend";
 
 const KpiTable = () => {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortKey>("status");
+  const { askAbout } = useDashboard();
 
   const sorted = [...executiveKpis].sort((a, b) => {
     switch (sortBy) {
@@ -62,76 +65,55 @@ const KpiTable = () => {
       </div>
 
       <div className="divide-y divide-border/50">
-        {sorted.map((kpi) => {
-          const isOpen = expandedId === kpi.id;
-          return (
-            <div key={kpi.id}>
-              <button
-                onClick={() => setExpandedId(isOpen ? null : kpi.id)}
-                className="w-full flex items-center gap-4 px-5 py-3 text-left hover:bg-muted/30 transition-colors active:bg-muted/50 group"
-              >
-                {/* Status */}
-                <span className={`w-2 h-2 rounded-full shrink-0 ${statusDot[kpi.status]}`} />
+        {sorted.map((kpi) => (
+          <Tooltip key={kpi.id} delayDuration={250}>
+            <TooltipTrigger asChild>
+          <div
+            onClick={() => askAbout(`${kpi.name} — current value, target, and status in 2 sentences.`)}
+            className="w-full flex items-center gap-4 px-5 py-3 text-left hover:bg-muted/30 transition-colors cursor-pointer"
+          >
+            {/* Status */}
+            <span className={`w-2 h-2 rounded-full shrink-0 ${statusDot[kpi.status]}`} />
 
-                {/* Icon + Name */}
-                <span className="flex items-center gap-2 w-[220px] shrink-0">
-                  <span className="text-muted-foreground">{kpi.icon}</span>
-                  <span className="text-sm font-medium text-foreground truncate">{kpi.name}</span>
-                </span>
+            {/* Icon + Name */}
+            <span className="flex items-center gap-2 w-[220px] shrink-0">
+              <span className="text-muted-foreground">{kpi.icon}</span>
+              <span className="text-sm font-medium text-foreground truncate">{kpi.name}</span>
+            </span>
 
-                {/* E33 Badge */}
-                <span className="e33-badge shrink-0">{kpi.e33Code}</span>
+            {/* E33 Badge */}
+            <span className="e33-badge shrink-0">{kpi.e33Code}</span>
 
-                {/* Value */}
-                <span className="text-lg font-extrabold text-foreground tabular-nums w-16 text-right shrink-0">{kpi.value}</span>
+            {/* Value */}
+            <span className="text-lg font-extrabold text-foreground tabular-nums w-16 text-right shrink-0">{kpi.value}</span>
 
-                {/* Target */}
-                <span className="text-xs text-muted-foreground w-16 text-right shrink-0 hidden md:block">{kpi.target}</span>
+            {/* Target */}
+            <span className="text-xs text-muted-foreground w-16 text-right shrink-0 hidden md:block">{kpi.target}</span>
 
-                {/* Trend */}
-                <span className={`flex items-center gap-1 text-xs font-medium w-20 justify-end shrink-0 ${kpi.trendDirection === "up" ? "kpi-trend-up" : "kpi-trend-down"}`}>
-                  {kpi.trendDirection === "up" ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                  {kpi.trendValue}
-                </span>
+            {/* Trend */}
+            <span className={`flex items-center gap-1 text-xs font-medium w-20 justify-end shrink-0 ${kpi.trendDirection === "up" ? "kpi-trend-up" : "kpi-trend-down"}`}>
+              {kpi.trendDirection === "up" ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+              {kpi.trendValue}
+            </span>
 
-                {/* Sparkline */}
-                <span className="hidden lg:block shrink-0">
-                  <Sparkline data={kpi.sparklineData} width={80} height={24} status={kpi.status} />
-                </span>
+            {/* Sparkline */}
+            <span className="hidden lg:block shrink-0">
+              <Sparkline data={kpi.sparklineData} width={80} height={24} status={kpi.status} />
+            </span>
 
-                {/* Status pill */}
-                <span className={`status-pill text-[10px] py-0.5 px-2 ml-auto shrink-0 ${
-                  kpi.status === "green" ? "status-pill-green" : kpi.status === "amber" ? "status-pill-amber" : "status-pill-red"
-                }`}>
-                  {statusLabel[kpi.status]}
-                </span>
-
-                <ChevronDown size={14} className={`text-muted-foreground transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
-              </button>
-
-              {/* Expanded detail */}
-              {isOpen && (
-                <div className="px-10 pb-4 flex flex-col sm:flex-row items-start gap-6 animate-fade-in bg-muted/10">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-6 text-xs text-muted-foreground">
-                      <span>Gap: <strong className={parseFloat(kpi.gapPercent) < 0 ? "kpi-trend-down" : "kpi-trend-up"}>{kpi.gap} ({kpi.gapPercent})</strong></span>
-                      {kpi.benchmark && <span>Benchmark: <strong className="text-foreground">{kpi.benchmark}</strong></span>}
-                      <span>YoY Change: <strong className="text-foreground">{kpi.trendPercent}</strong></span>
-                    </div>
-                    <div className="text-xs text-muted-foreground space-y-0.5">
-                      <p>Data Source: Student Information System</p>
-                      <p>Owner: Strategic Planning Division</p>
-                    </div>
-                  </div>
-                  <div className="shrink-0">
-                    <Sparkline data={kpi.sparklineData} width={200} height={48} status={kpi.status} />
-                    <p className="text-[10px] text-muted-foreground mt-1 text-center">7-week trend</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+            {/* Status pill */}
+            <span className={`status-pill text-[10px] py-0.5 px-2 ml-auto shrink-0 ${
+              kpi.status === "green" ? "status-pill-green" : kpi.status === "amber" ? "status-pill-amber" : "status-pill-red"
+            }`}>
+              {statusLabel[kpi.status]}
+            </span>
+          </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <p className="text-sm leading-snug">{kpiTooltip(kpi)}</p>
+            </TooltipContent>
+          </Tooltip>
+        ))}
       </div>
     </div>
   );

@@ -73,7 +73,8 @@
     { "name": "Al Quoz", "schools": 18, "students": 28000, "avgScore": 62, "status": "red", "accessIndex": 65 },
     { "name": "International City", "schools": 15, "students": 35000, "avgScore": 58, "status": "red", "accessIndex": 58 },
     { "name": "Dubai Silicon Oasis", "schools": 12, "students": 18000, "avgScore": 74, "status": "amber", "accessIndex": 82 },
-    { "name": "Al Barsha", "schools": 30, "students": 38000, "avgScore": 77, "status": "green", "accessIndex": 89 }
+    { "name": "Al Barsha", "schools": 30, "students": 38000, "avgScore": 77, "status": "green", "accessIndex": 89 },
+    { "name": "Other Districts", "schools": 16, "students": 87500, "avgScore": 70, "status": "amber", "accessIndex": 75 }
   ],
   "inclusionMetrics": [
     { "category": "SEN", "metric": "Students with IEPs", "value": 4200, "target": 5500, "status": "amber", "trend": "up" },

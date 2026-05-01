@@ -7,7 +7,7 @@
     "targetScore": 85,
     "studentTeacherRatio": "1:15",
     "studentsTrend": "+3.2% YoY",
-    "schoolsInspected": "98%"
+    "schoolsInspected": "100%"
   },
   "systemFlow": [
     { "label": "Student Enrollment", "desc": "361.5K students enter the system", "color": "primary", "tab": "student" },
@@ -36,7 +36,7 @@
       "target": 90,
       "status": "amber",
       "insight": "29% drop-off at Secondary → Higher Ed transition",
-      "kpis": 5,
+      "kpis": 4,
       "critical": 2
     },
     {
@@ -58,7 +58,7 @@
       "target": 85,
       "status": "amber",
       "insight": "PD completion at 68%, retention improving",
-      "kpis": 3,
+      "kpis": 4,
       "critical": 1
     },
     {
@@ -68,8 +68,8 @@
       "score": 71,
       "target": 85,
       "status": "amber",
-      "insight": "18% of schools need improvement plans",
-      "kpis": 3,
+      "insight": "15% of schools need improvement plans",
+      "kpis": 4,
       "critical": 1
     },
     {
@@ -79,8 +79,8 @@
       "score": 79,
       "target": 90,
       "status": "amber",
-      "insight": "Budget execution at 87%, facilities at 72%",
-      "kpis": 3,
+      "insight": "Budget execution at 84%, facilities at 72%",
+      "kpis": 4,
       "critical": 0
     }
   ]

@@ -1,13 +1,20 @@
 import type { DashboardTab } from "@/components/dashboard/DashboardTabs";
 
+export interface ToolInvocation {
+  name: string;
+  args?: unknown;
+  status: "running" | "done" | "failed";
+  result?: unknown;
+}
+
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  toolCalls?: ToolInvocation[];
 }
 
 export interface ScreenContext {
   activeTab: DashboardTab;
-  selectedStudent?: string;
 }
 
 export interface ChatRequest {

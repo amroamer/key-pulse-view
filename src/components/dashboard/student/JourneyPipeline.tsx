@@ -11,6 +11,9 @@ const HERO_ICONS: Record<string, React.ReactNode> = {
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import { tooltipContentStyle, tooltipItemStyle, tooltipLabelStyle } from "@/lib/chartTooltip";
+import { Tooltip as InfoTooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { simpleTileTooltip } from "@/lib/tooltips";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 const statusClasses = {
   green: "bg-[hsl(var(--status-green-bg))] border-[hsl(var(--status-green-accent))]",
@@ -46,6 +49,7 @@ const stageIcons: Record<string, React.ReactNode> = {
 
 const JourneyPipeline = () => {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
+  const { askAbout } = useDashboard();
 
   const selectedData = selectedStage ? journeyStages.find((s) => s.id === selectedStage) : null;
 
@@ -71,11 +75,20 @@ const JourneyPipeline = () => {
       {/* Hero strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {journeyHeroMetrics.map((m) => (
-          <div key={m.label} className="rounded-xl border border-border bg-card p-3 space-y-1">
-            <div className="flex items-center gap-1.5 text-muted-foreground">{HERO_ICONS[m.iconKey] ?? <Users size={16} />}<span className="text-[10px] font-medium">{m.label}</span></div>
-            <p className="text-xl font-extrabold text-foreground">{m.value}</p>
-            <p className="text-[10px] text-muted-foreground">{m.sub}</p>
-          </div>
+          <InfoTooltip key={m.label} delayDuration={250}>
+            <TooltipTrigger asChild>
+              <div onClick={() => askAbout(`${m.label} — value and what's driving it, in 2 sentences.`)} className="rounded-xl border border-border bg-card p-3 space-y-1 cursor-pointer">
+                <div className="flex items-center gap-1.5 text-muted-foreground">{HERO_ICONS[m.iconKey] ?? <Users size={16} />}<span className="text-[10px] font-medium">{m.label}</span></div>
+                <p className="text-xl font-extrabold text-foreground">{m.value}</p>
+                <p className="text-[10px] text-muted-foreground">{m.sub}</p>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <p className="text-sm leading-snug">
+                {simpleTileTooltip({ label: m.label, value: m.value, sub: m.sub })}
+              </p>
+            </TooltipContent>
+          </InfoTooltip>
         ))}
       </div>
 
