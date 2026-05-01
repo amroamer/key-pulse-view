@@ -80,10 +80,9 @@ src/
 - Vitest setup: `src/test/setup.ts` (loads `@testing-library/jest-dom`, stubs `matchMedia`).
 - Playwright config: `playwright.config.ts` (delegates to `lovable-agent-playwright-config`).
 
-## Lovable integration
+## History
 
-- `lovable-tagger` is enabled only in dev mode (`vite.config.ts`). Safe to keep; safe to remove if detaching from Lovable.
-- `bun.lockb` is the Lovable-style binary lockfile; `bun.lock` is the text version. Both are committed.
+Originally scaffolded by Lovable; detached and now developed directly. No `lovable-tagger`, no Lovable-specific Playwright config, no binary lockfile.
 
 ## Git
 
