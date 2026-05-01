@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --background: 160 5% 97%;
+    --foreground: 168 38% 17%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 168 38% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 168 38% 17%;
+
+    --primary: 155 75% 42%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 207 90% 54%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 160 10% 94%;
+    --muted-foreground: 168 10% 45%;
+
+    --accent: 160 10% 94%;
+    --accent-foreground: 168 38% 17%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 160 10% 90%;
+    --input: 160 10% 90%;
+    --ring: 155 75% 42%;
+
+    --radius: 0.75rem;
+
+    /* Dashboard-specific tokens */
+    --status-green-bg: 122 38% 85%;
+    --status-green-text: 122 38% 25%;
+    --status-green-accent: 122 39% 49%;
+
+    --status-amber-bg: 36 100% 85%;
+    --status-amber-text: 36 60% 30%;
+    --status-amber-accent: 36 100% 50%;
+
+    --status-red-bg: 0 73% 90%;
+    --status-red-text: 0 60% 35%;
+    --status-red-accent: 0 65% 51%;
+
+    --e33-badge-bg: 207 88% 94%;
+    --e33-badge-text: 207 80% 42%;
+
+    --trend-up: 145 63% 42%;
+    --trend-down: 0 72% 51%;
+
+    --sparkline-stroke: 155 75% 42%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .kpi-value {
+    @apply text-5xl font-extrabold tracking-tight;
+    color: hsl(var(--foreground));
+    line-height: 1.1;
+  }
+  .kpi-label {
+    @apply text-base font-semibold;
+    color: hsl(var(--foreground));
+  }
+  .kpi-trend-up {
+    @apply text-sm font-medium;
+    color: hsl(var(--trend-up));
+  }
+  .kpi-trend-down {
+    @apply text-sm font-medium;
+    color: hsl(var(--trend-down));
+  }
+  .e33-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    background: hsl(var(--e33-badge-bg));
+    color: hsl(var(--e33-badge-text));
+  }
+  .status-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider;
+  }
+  .status-pill-green {
+    background: hsl(var(--status-green-bg));
+    color: hsl(var(--status-green-text));
+  }
+  .status-pill-amber {
+    background: hsl(var(--status-amber-bg));
+    color: hsl(var(--status-amber-text));
+  }
+  .status-pill-red {
+    background: hsl(var(--status-red-bg));
+    color: hsl(var(--status-red-text));
+  }
+
+  .card-status-green {
+    border-left: 4px solid hsl(var(--status-green-accent));
+    background: linear-gradient(135deg, hsl(var(--status-green-bg) / 0.3), hsl(var(--card)));
+  }
+  .card-status-amber {
+    border-left: 4px solid hsl(var(--status-amber-accent));
+    background: linear-gradient(135deg, hsl(var(--status-amber-bg) / 0.3), hsl(var(--card)));
+  }
+  .card-status-red {
+    border-left: 4px solid hsl(var(--status-red-accent));
+    background: linear-gradient(135deg, hsl(var(--status-red-bg) / 0.3), hsl(var(--card)));
+  }
+
+
+  .scroll-revealed {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+}
