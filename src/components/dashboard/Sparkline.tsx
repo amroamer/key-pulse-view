@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 
 interface SparklineProps {
   data: number[];
@@ -8,9 +8,9 @@ interface SparklineProps {
 }
 
 const statusColors = {
-  green: "hsl(122, 39%, 49%)",
-  amber: "hsl(36, 100%, 50%)",
-  red: "hsl(0, 65%, 51%)",
+  green: "hsl(var(--status-green-accent))",
+  amber: "hsl(var(--status-amber-accent))",
+  red: "hsl(var(--status-red-accent))",
 };
 
 const Sparkline = ({ data, width = 180, height = 48, status }: SparklineProps) => {

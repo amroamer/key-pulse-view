@@ -5,7 +5,7 @@ import ScrollReveal from "../ScrollReveal";
 
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusBg = { green: "bg-[hsl(var(--status-green-bg))]", amber: "bg-[hsl(var(--status-amber-bg))]", red: "bg-[hsl(var(--status-red-bg))]" };
-const statusColor = { green: "hsl(122, 39%, 49%)", amber: "hsl(36, 100%, 50%)", red: "hsl(0, 65%, 51%)" };
+const statusColor = { green: "hsl(var(--status-green-accent))", amber: "hsl(var(--status-amber-accent))", red: "hsl(var(--status-red-accent))" };
 const trendIcon = (t: "up" | "down" | "flat") => {
   if (t === "up") return <TrendingUp size={10} className="text-[hsl(var(--trend-up))]" />;
   if (t === "down") return <TrendingDown size={10} className="text-[hsl(var(--trend-down))]" />;
@@ -52,10 +52,10 @@ const EfficiencyView = () => {
             <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={budgetChartData} layout="vertical" margin={{ top: 5, right: 15, left: 5, bottom: 0 }}>
-                  <XAxis type="number" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}M`} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 8, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} width={80} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(160, 10%, 90%)" }} formatter={(v: number, n: string, p: any) => [`${v}M AED`, n === "spent" ? "Spent" : "Allocated"]} />
-                  <Bar dataKey="allocated" fill="hsl(160, 10%, 85%)" radius={[0, 4, 4, 0]} barSize={10} name="Allocated" />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}M`} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={80} />
+                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} formatter={(v: number, n: string, p: any) => [`${v}M AED`, n === "spent" ? "Spent" : "Allocated"]} />
+                  <Bar dataKey="allocated" fill="hsl(var(--muted))" radius={[0, 4, 4, 0]} barSize={10} name="Allocated" />
                   <Bar dataKey="spent" radius={[0, 4, 4, 0]} barSize={10} name="Spent">
                     {budgetChartData.map((d, i) => (<Cell key={i} fill={statusColor[d.status]} />))}
                   </Bar>

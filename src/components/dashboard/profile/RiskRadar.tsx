@@ -1,4 +1,4 @@
-import { getRiskDimensions, type StudentProfile } from "@/data/studentProfileData";
+﻿import { getRiskDimensions, type StudentProfile } from "@/data/studentProfileData";
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
@@ -31,10 +31,10 @@ const RiskRadar = ({ student }: RiskRadarProps) => {
 
   const strokeColor =
     avgScore >= 75
-      ? "hsl(122, 39%, 49%)"
+      ? "hsl(var(--status-green-accent))"
       : avgScore >= 50
-      ? "hsl(36, 100%, 50%)"
-      : "hsl(0, 65%, 51%)";
+      ? "hsl(var(--status-amber-accent))"
+      : "hsl(var(--status-red-accent))";
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 space-y-3">
@@ -51,8 +51,8 @@ const RiskRadar = ({ student }: RiskRadarProps) => {
 
       <ResponsiveContainer width="100%" height={200}>
         <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-          <PolarGrid stroke="hsl(160, 10%, 90%)" />
-          <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} />
+          <PolarGrid stroke="hsl(var(--border))" />
+          <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} />
           <PolarRadiusAxis tick={false} domain={[0, 100]} />
           <Radar dataKey="score" stroke={strokeColor} fill={strokeColor} fillOpacity={0.15} strokeWidth={2} />
         </RadarChart>

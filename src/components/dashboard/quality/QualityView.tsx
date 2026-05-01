@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { schoolRatings, recentInspections, complianceAreas, improvementTrajectories, qualityHeroMetrics } from "@/data/qualityData";
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Equal } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
@@ -80,7 +80,7 @@ const QualityView = () => {
                 return (
                   <div key={ins.school} className={`rounded-lg p-2.5 ${statusBg[ins.status]} transition-all hover:shadow-sm`}>
                     <div className="flex items-start justify-between">
-                      <div><p className="text-xs font-bold text-foreground">{ins.school}</p><p className="text-[10px] text-muted-foreground">{ins.type} · {ins.date}</p></div>
+                      <div><p className="text-xs font-bold text-foreground">{ins.school}</p><p className="text-[10px] text-muted-foreground">{ins.type} Â· {ins.date}</p></div>
                       <div className="text-right"><p className="text-xs font-bold text-foreground">{ins.rating}</p>{improved && <p className="text-[9px] text-muted-foreground">was {ins.prevRating}</p>}</div>
                     </div>
                     <div className="flex gap-1 mt-1.5 flex-wrap">
@@ -128,9 +128,9 @@ const QualityView = () => {
                     <div className="mt-2 h-[80px] animate-in fade-in-0 duration-200">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={t.ratings} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                          <XAxis dataKey="year" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} />
-                          <YAxis tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} domain={[30, 100]} />
-                          <Line type="monotone" dataKey="score" stroke={t.trajectory === "improving" ? "hsl(155, 75%, 42%)" : t.trajectory === "declining" ? "hsl(0, 65%, 51%)" : "hsl(36, 100%, 50%)"} strokeWidth={2} dot={{ r: 3 }} />
+                          <XAxis dataKey="year" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+                          <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[30, 100]} />
+                          <Line type="monotone" dataKey="score" stroke={t.trajectory === "improving" ? "hsl(var(--primary))" : t.trajectory === "declining" ? "hsl(var(--status-red-accent))" : "hsl(var(--status-amber-accent))"} strokeWidth={2} dot={{ r: 3 }} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>

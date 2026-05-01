@@ -22,9 +22,9 @@ const statusDot = {
   red: "bg-[hsl(var(--status-red-accent))]",
 };
 const statusColor = {
-  green: "hsl(122, 39%, 49%)",
-  amber: "hsl(36, 100%, 50%)",
-  red: "hsl(0, 65%, 51%)",
+  green: "hsl(var(--status-green-accent))",
+  amber: "hsl(var(--status-amber-accent))",
+  red: "hsl(var(--status-red-accent))",
 };
 
 const trendIcon = (dir: "up" | "down" | "flat") => {
@@ -198,8 +198,8 @@ const JourneyPipeline = () => {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Performance Profile</p>
               <ResponsiveContainer width="100%" height={180}>
                 <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-                  <PolarGrid stroke="hsl(160, 10%, 90%)" />
-                  <PolarAngleAxis dataKey="metric" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} />
+                  <PolarGrid stroke="hsl(var(--border))" />
+                  <PolarAngleAxis dataKey="metric" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} />
                   <PolarRadiusAxis tick={false} domain={[0, 100]} />
                   <Radar dataKey="value" stroke={statusColor[selectedData.status]} fill={statusColor[selectedData.status]} fillOpacity={0.2} strokeWidth={2} />
                 </RadarChart>
@@ -211,12 +211,12 @@ const JourneyPipeline = () => {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Cross-Stage Comparison</p>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={comparisonData} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
-                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} domain={[0, 100]} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(160, 10%, 90%)" }} />
+                  <XAxis dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+                  <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[0, 100]} />
+                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
                   <Bar dataKey="score" radius={[4, 4, 0, 0]} name="Avg Score">
                     {comparisonData.map((d, idx) => (
-                      <Cell key={idx} fill={d.name === selectedData.shortLabel ? statusColor[selectedData.status] : "hsl(160, 10%, 85%)"} />
+                      <Cell key={idx} fill={d.name === selectedData.shortLabel ? statusColor[selectedData.status] : "hsl(var(--muted))"} />
                     ))}
                   </Bar>
                 </BarChart>

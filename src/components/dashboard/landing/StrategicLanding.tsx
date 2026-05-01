@@ -50,10 +50,10 @@ const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
                 <div className="text-center">
                   <div className="relative w-20 h-20">
                     <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
-                      <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(160, 10%, 92%)" strokeWidth="2.5" />
+                      <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(var(--border))" strokeWidth="2.5" />
                       <circle
                         cx="18" cy="18" r="15.9" fill="none"
-                        stroke="hsl(155, 75%, 42%)"
+                        stroke="hsl(var(--primary))"
                         strokeWidth="2.5"
                         strokeDasharray={`${(overallScore / 100) * 100} 100`}
                         strokeLinecap="round"

@@ -9,15 +9,15 @@ import { executiveKpis } from "@/data/kpiData";
  */
 
 const statusColors = {
-  green: "hsl(122, 39%, 49%)",
-  amber: "hsl(36, 100%, 50%)",
-  red: "hsl(0, 65%, 51%)",
+  green: "hsl(var(--status-green-accent))",
+  amber: "hsl(var(--status-amber-accent))",
+  red: "hsl(var(--status-red-accent))",
 };
 
 const statusBg = {
-  green: "hsl(122, 39%, 49%, 0.15)",
-  amber: "hsl(36, 100%, 50%, 0.15)",
-  red: "hsl(0, 65%, 51%, 0.15)",
+  green: "hsl(var(--status-green-accent) / 0.15)",
+  amber: "hsl(var(--status-amber-accent) / 0.15)",
+  red: "hsl(var(--status-red-accent) / 0.15)",
 };
 
 // Parse gap percent to a number
@@ -62,7 +62,7 @@ const PriorityMatrix = () => {
             <div className="bg-muted/20 border-r border-b border-border/30" /> {/* Low gap, high trend = MONITOR */}
             <div className="bg-muted/40 border-b border-border/30" /> {/* High gap, high trend = ACCELERATE */}
             <div className="bg-muted/10 border-r border-border/30" /> {/* Low gap, low trend = MAINTAIN */}
-            <div style={{ background: "hsl(0, 65%, 51%, 0.06)" }} /> {/* High gap, low trend = INTERVENE */}
+            <div style={{ background: "hsl(var(--status-red-accent) / 0.06)" }} /> {/* High gap, low trend = INTERVENE */}
           </div>
 
           {/* Quadrant labels */}

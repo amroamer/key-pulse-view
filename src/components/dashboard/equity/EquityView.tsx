@@ -7,7 +7,7 @@ import ScrollReveal from "../ScrollReveal";
 const statusDot = { green: "bg-[hsl(var(--status-green-accent))]", amber: "bg-[hsl(var(--status-amber-accent))]", red: "bg-[hsl(var(--status-red-accent))]" };
 const statusBg = { green: "bg-[hsl(var(--status-green-bg))]", amber: "bg-[hsl(var(--status-amber-bg))]", red: "bg-[hsl(var(--status-red-bg))]" };
 const statusText = { green: "text-[hsl(var(--status-green-text))]", amber: "text-[hsl(var(--status-amber-text))]", red: "text-[hsl(var(--status-red-text))]" };
-const statusColor = { green: "hsl(122, 39%, 49%)", amber: "hsl(36, 100%, 50%)", red: "hsl(0, 65%, 51%)" };
+const statusColor = { green: "hsl(var(--status-green-accent))", amber: "hsl(var(--status-amber-accent))", red: "hsl(var(--status-red-accent))" };
 
 const trendIcon = (t: "up" | "down" | "flat") => {
   if (t === "up") return <TrendingUp size={10} className="text-[hsl(var(--trend-up))]" />;
@@ -28,7 +28,7 @@ const EquityView = () => {
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Equity Scorecard</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {equityDimensions.map((d) => (
-              <button key={d.id} onClick={() => setExpandedDim(expandedDim === d.id ? null : d.id)} className={`rounded-xl border-2 p-3 text-left transition-all hover:shadow-sm cursor-pointer ${expandedDim === d.id ? "ring-2 ring-primary shadow-md" : ""} ${statusBg[d.status]} border-[hsl(var(--status-${d.status}-accent))]`} style={{ borderColor: d.status === "green" ? "hsl(122, 39%, 49%)" : d.status === "amber" ? "hsl(36, 100%, 50%)" : "hsl(0, 65%, 51%)" }}>
+              <button key={d.id} onClick={() => setExpandedDim(expandedDim === d.id ? null : d.id)} className={`rounded-xl border-2 p-3 text-left transition-all hover:shadow-sm cursor-pointer ${expandedDim === d.id ? "ring-2 ring-primary shadow-md" : ""} ${statusBg[d.status]} border-[hsl(var(--status-${d.status}-accent))]`} style={{ borderColor: d.status === "green" ? "hsl(var(--status-green-accent))" : d.status === "amber" ? "hsl(var(--status-amber-accent))" : "hsl(var(--status-red-accent))" }}>
                 <p className="text-[10px] text-muted-foreground font-medium">{d.label}</p>
                 <div className="flex items-end justify-between mt-1">
                   <span className="text-2xl font-extrabold text-foreground">{d.score}</span>
@@ -74,12 +74,12 @@ const EquityView = () => {
             <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={gapData} layout="vertical" margin={{ top: 5, right: 20, left: 5, bottom: 0 }}>
-                  <XAxis type="number" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} width={70} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(160, 10%, 90%)" }} formatter={(v: number, _: string, p: any) => [`${v > 0 ? "+" : ""}${v} pts`, p.payload.full]} />
-                  <ReferenceLine x={0} stroke="hsl(160, 10%, 80%)" />
+                  <XAxis type="number" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={70} />
+                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} formatter={(v: number, _: string, p: any) => [`${v > 0 ? "+" : ""}${v} pts`, p.payload.full]} />
+                  <ReferenceLine x={0} stroke="hsl(var(--border))" />
                   <Bar dataKey="gap" radius={[0, 4, 4, 0]} name="Gap" barSize={18}>
-                    {gapData.map((d, i) => (<Cell key={i} fill={d.gap >= 0 ? "hsl(155, 75%, 42%)" : "hsl(0, 65%, 51%)"} />))}
+                    {gapData.map((d, i) => (<Cell key={i} fill={d.gap >= 0 ? "hsl(var(--primary))" : "hsl(var(--status-red-accent))"} />))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

@@ -65,6 +65,9 @@
     --accent: 332 58% 35%; /* khda-action 500 */
     --accent-foreground: 0 0% 100%;
 
+    --info: 205 60% 32%; /* khda-info 500 */
+    --info-foreground: 0 0% 100%;
+
     --destructive: 0 70% 46%; /* khda-error 500 */
     --destructive-foreground: 0 0% 100%;
 

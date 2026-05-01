@@ -1,4 +1,4 @@
-import { getAcademicRecords, type StudentProfile } from "@/data/studentProfileData";
+﻿import { getAcademicRecords, type StudentProfile } from "@/data/studentProfileData";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Area, AreaChart } from "recharts";
 
 interface AcademicTrajectoryProps {
@@ -27,14 +27,14 @@ const AcademicTrajectory = ({ student }: AcademicTrajectoryProps) => {
         <div>
           <h3 className="text-sm font-bold text-foreground">Academic Trajectory</h3>
           <p className="text-[10px] text-muted-foreground">
-            {records.length} years of data · {records[0]?.year} to {records[records.length - 1]?.year}
+            {records.length} years of data Â· {records[0]?.year} to {records[records.length - 1]?.year}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
             <p className="text-xl font-extrabold text-foreground">{latestGpa.toFixed(1)}</p>
             <p className={`text-[10px] font-bold ${gpaTrend >= 0 ? "text-[hsl(var(--trend-up))]" : "text-[hsl(var(--trend-down))]"}`}>
-              {gpaTrend >= 0 ? "▲" : "▼"} {Math.abs(gpaTrend).toFixed(1)} GPA
+              {gpaTrend >= 0 ? "â–²" : "â–¼"} {Math.abs(gpaTrend).toFixed(1)} GPA
             </p>
           </div>
         </div>
@@ -44,24 +44,24 @@ const AcademicTrajectory = ({ student }: AcademicTrajectoryProps) => {
         <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="gpaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(155, 75%, 42%)" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="hsl(155, 75%, 42%)" stopOpacity={0} />
+              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="attendGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(207, 90%, 54%)" stopOpacity={0.15} />
-              <stop offset="95%" stopColor="hsl(207, 90%, 54%)" stopOpacity={0} />
+              <stop offset="5%" stopColor="hsl(var(--info))" stopOpacity={0.15} />
+              <stop offset="95%" stopColor="hsl(var(--info))" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 10%, 92%)" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} />
-          <YAxis tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} domain={[0, 4]} yAxisId="gpa" />
-          <YAxis tick={{ fontSize: 9, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} domain={[0, 100]} yAxisId="pct" orientation="right" hide />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[0, 4]} yAxisId="gpa" />
+          <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} domain={[0, 100]} yAxisId="pct" orientation="right" hide />
           <Tooltip
-            contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(160, 10%, 90%)", background: "hsl(0, 0%, 100%)" }}
+            contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))", background: "hsl(0, 0%, 100%)" }}
           />
-          <ReferenceLine yAxisId="gpa" y={3.0} stroke="hsl(155, 75%, 42%)" strokeDasharray="4 4" strokeOpacity={0.4} />
-          <Area type="monotone" dataKey="GPA" stroke="hsl(155, 75%, 42%)" strokeWidth={2.5} fill="url(#gpaGradient)" yAxisId="gpa" dot={{ r: 3, fill: "hsl(155, 75%, 42%)" }} activeDot={{ r: 5 }} />
-          <Line type="monotone" dataKey="Attendance" stroke="hsl(207, 90%, 54%)" strokeWidth={1.5} strokeDasharray="4 2" yAxisId="pct" dot={false} />
+          <ReferenceLine yAxisId="gpa" y={3.0} stroke="hsl(var(--primary))" strokeDasharray="4 4" strokeOpacity={0.4} />
+          <Area type="monotone" dataKey="GPA" stroke="hsl(var(--primary))" strokeWidth={2.5} fill="url(#gpaGradient)" yAxisId="gpa" dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
+          <Line type="monotone" dataKey="Attendance" stroke="hsl(var(--info))" strokeWidth={1.5} strokeDasharray="4 2" yAxisId="pct" dot={false} />
         </AreaChart>
       </ResponsiveContainer>
 

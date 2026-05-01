@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { qualityBands, teacherHeroMetrics, retentionCohorts, pdPrograms, teacherBySubject } from "@/data/teacherData";
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Legend } from "recharts";
@@ -80,7 +80,7 @@ const TeacherView = () => {
                 {teacherBySubject.map((s) => (
                   <div key={s.subject} className="flex items-center gap-2 text-xs">
                     <span className="text-muted-foreground w-24 truncate">{s.subject}</span>
-                    <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full" style={{ width: `${s.quality}%`, background: s.quality >= 70 ? "hsl(155, 75%, 42%)" : s.quality >= 60 ? "hsl(36, 100%, 50%)" : "hsl(0, 65%, 51%)" }} /></div>
+                    <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden"><div className="h-full rounded-full" style={{ width: `${s.quality}%`, background: s.quality >= 70 ? "hsl(var(--primary))" : s.quality >= 60 ? "hsl(var(--status-amber-accent))" : "hsl(var(--status-red-accent))" }} /></div>
                     <span className="font-bold text-foreground w-6 text-right">{s.quality}</span>
                     {s.vacancy > 10 && <span className="text-[9px] text-[hsl(var(--status-red-text))] bg-[hsl(var(--status-red-bg))] rounded-full px-1.5">{s.vacancy}% vacant</span>}
                   </div>
@@ -97,16 +97,16 @@ const TeacherView = () => {
             <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={retentionData} margin={{ top: 5, right: 10, left: -15, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 10%, 90%)" />
-                  <XAxis dataKey="year" tick={{ fontSize: 10, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "hsl(168, 10%, 45%)" }} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(160, 10%, 90%)" }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="year" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+                  <Tooltip contentStyle={{ fontSize: "11px", borderRadius: "8px", border: "1px solid hsl(var(--border))" }} />
                   <Legend iconType="circle" iconSize={6} wrapperStyle={{ fontSize: "10px" }} />
-                  <Line type="monotone" dataKey="hired" stroke="hsl(207, 90%, 54%)" strokeWidth={2} dot={{ r: 3 }} name="Hired" connectNulls />
-                  <Line type="monotone" dataKey="Year 1" stroke="hsl(155, 75%, 42%)" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-                  <Line type="monotone" dataKey="Year 2" stroke="hsl(36, 100%, 50%)" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                  <Line type="monotone" dataKey="hired" stroke="hsl(var(--info))" strokeWidth={2} dot={{ r: 3 }} name="Hired" connectNulls />
+                  <Line type="monotone" dataKey="Year 1" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                  <Line type="monotone" dataKey="Year 2" stroke="hsl(var(--status-amber-accent))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
                   <Line type="monotone" dataKey="Year 3" stroke="hsl(25, 90%, 55%)" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-                  <Line type="monotone" dataKey="Year 5" stroke="hsl(0, 65%, 51%)" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+                  <Line type="monotone" dataKey="Year 5" stroke="hsl(var(--status-red-accent))" strokeWidth={2} dot={{ r: 3 }} connectNulls />
                 </LineChart>
               </ResponsiveContainer>
             </div>
