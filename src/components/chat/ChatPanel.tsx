@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useDashboard } from "@/contexts/DashboardContext";
 import { streamChat, type ChatMessage } from "@/lib/chatClient";
 import { cn } from "@/lib/utils";
@@ -12,12 +12,20 @@ const ChatPanel = () => {
   const [streaming, setStreaming] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { activeTab, selectedStudent } = useDashboard();
 
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }, [input]);
 
   const send = async () => {
     const text = input.trim();
@@ -116,14 +124,23 @@ const ChatPanel = () => {
           e.preventDefault();
           send();
         }}
-        className="flex gap-2 border-t p-3"
+        className="flex gap-2 border-t p-3 items-end"
       >
-        <Input
+        <Textarea
+          ref={textareaRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about your KPIs..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+              e.preventDefault();
+              send();
+            }
+          }}
+          placeholder="Ask about your KPIs... (Shift+Enter for newline)"
           disabled={streaming}
           autoFocus
+          rows={1}
+          className="min-h-[40px] max-h-[200px] resize-none py-2 leading-tight"
         />
         <Button type="submit" size="icon" disabled={streaming || !input.trim()}>
           {streaming ? (
