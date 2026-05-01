@@ -1,7 +1,8 @@
 import { Suspense, lazy, useState } from "react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import DashboardTabs, { type DashboardTab } from "@/components/dashboard/DashboardTabs";
+import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import StatusSummaryBar from "@/components/dashboard/StatusSummaryBar";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 const StrategicLanding = lazy(() => import("@/components/dashboard/landing/StrategicLanding"));
 const ExecutiveSummary = lazy(() => import("@/components/dashboard/ExecutiveSummary"));
@@ -20,7 +21,7 @@ const TabFallback = () => (
 
 const Index = () => {
   const [period, setPeriod] = useState("Current Week");
-  const [activeTab, setActiveTab] = useState<DashboardTab>("landing");
+  const { activeTab, setActiveTab } = useDashboard();
 
   const renderTab = () => {
     switch (activeTab) {

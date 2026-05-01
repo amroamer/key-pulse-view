@@ -1,28 +1,35 @@
 # key-pulse-view
 
-An education KPI dashboard built with Vite, React, TypeScript, Tailwind, and shadcn/ui. Eight tabbed views surface metrics across student journey, equity, teacher quality, and institutional efficiency.
+An education KPI dashboard with an embedded LLM assistant. Built with Vite, React, TypeScript, Tailwind, and shadcn/ui on the front; FastAPI + Ollama on the back. Eight tabbed views surface KPIs across student journey, equity, teacher quality, and institutional efficiency. A floating chat bubble lets you ask questions about what you're seeing — answered by a local model running in Docker.
 
-> All data is mock data, kept under `src/data/`. There is no backend yet.
+> Dashboard data is mock data in `src/data/`. The chat is fully offline: it talks to your own Ollama container, no external API calls.
 
 ## Quick start
 
 ```bash
-bun install
-bun dev          # http://localhost:8080
+# 1) Backend (Ollama + FastAPI in Docker — first run pulls qwen2.5:7b ~4.7 GB)
+npm run stack:up
+
+# 2) Frontend
+npm install
+npm run dev          # http://localhost:8080
 ```
+
+The chat bubble is bottom-right of the dashboard.
 
 ## Scripts
 
-| Command                 | What it does                          |
-| ----------------------- | ------------------------------------- |
-| `bun dev`               | Start the Vite dev server (port 8080) |
-| `bun run build`         | Production build                      |
-| `bun run build:dev`     | Build with development mode flags     |
-| `bun run preview`       | Preview the production build locally  |
-| `bun run lint`          | Run ESLint                            |
-| `bun test`              | Run unit tests once (Vitest)          |
-| `bun run test:watch`    | Vitest in watch mode                  |
-| `bunx playwright test`  | Run end-to-end tests                  |
+| Command                  | What it does                          |
+| ------------------------ | ------------------------------------- |
+| `npm run dev`            | Start the Vite dev server (port 8080) |
+| `npm run build`          | Production build                      |
+| `npm run lint`           | Run ESLint                            |
+| `npm test`               | Run unit tests once (Vitest)          |
+| `npm run stack:up`       | Build & start Docker stack (api + ollama) |
+| `npm run stack:down`     | Stop the stack                        |
+| `npm run stack:logs`     | Tail logs from all stack services     |
+| `npm run stack:rebuild`  | Force rebuild after Dockerfile change |
+| `bunx playwright test`   | Run end-to-end tests                  |
 
 ## Tabs
 
@@ -76,6 +83,24 @@ bunx shadcn@latest add <component>
 ```
 
 Don't hand-edit existing primitives — re-run the CLI if you need updates.
+
+## LLM assistant
+
+A floating bubble in the dashboard opens a chat panel powered by a local Ollama model (default `qwen2.5:7b`). It receives the active tab and any selected entity as context, so questions like "what does this tab show?" work.
+
+Backend lives in [server/](server/), runs in Docker via [docker-compose.yml](docker-compose.yml). Three services:
+
+| Service          | Image                  | Host port | Role                                 |
+| ---------------- | ---------------------- | --------- | ------------------------------------ |
+| `kpv-ollama`     | `ollama/ollama:latest` | `11436`   | Inference engine, GPU-accelerated    |
+| `kpv-bootstrap`  | `ollama/ollama:latest` | —         | One-shot, pulls the model if missing |
+| `kpv-api`        | built from `server/`   | `8765`    | FastAPI proxy with SSE streaming     |
+
+> Host port `11436` is used because port `11434` (Ollama default) is taken by another container on this dev machine.
+
+To switch models edit `OLLAMA_MODEL` in [docker-compose.yml](docker-compose.yml) and run `npm run stack:up` again — the bootstrap step will pull the new model.
+
+GPU support is on by default (NVIDIA only). If you don't have NVIDIA Container Toolkit set up, comment out the `deploy.resources.reservations.devices` block in [docker-compose.yml](docker-compose.yml).
 
 ## Working with Claude Code
 

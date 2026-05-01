@@ -1,0 +1,69 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: kpv-ollama
+    # Host port 11436 -> container 11434. Avoids conflict with the
+    # arch-assistant-ollama container that already binds host port 11434.
+    ports:
+      - "11436:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    restart: unless-stopped
+    # GPU support: requires NVIDIA Container Toolkit + Docker Desktop GPU enabled.
+    # If you do not have an NVIDIA GPU, comment out the deploy block.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  bootstrap:
+    image: ollama/ollama:latest
+    container_name: kpv-bootstrap
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        echo "[bootstrap] checking model: ${OLLAMA_MODEL:-qwen2.5:7b}"
+        if ollama list | grep -q "${OLLAMA_MODEL:-qwen2.5:7b}"; then
+          echo "[bootstrap] model already present, skipping"
+        else
+          echo "[bootstrap] pulling ${OLLAMA_MODEL:-qwen2.5:7b}"
+          ollama pull "${OLLAMA_MODEL:-qwen2.5:7b}"
+        fi
+    restart: "no"
+
+  api:
+    build:
+      context: ./server
+    container_name: kpv-api
+    ports:
+      - "8765:8765"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:7b}
+    depends_on:
+      ollama:
+        condition: service_healthy
+      bootstrap:
+        condition: service_completed_successfully
+    volumes:
+      - ./server:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8765 --reload
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+    name: kpv_ollama_data

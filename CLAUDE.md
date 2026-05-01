@@ -4,29 +4,30 @@ Guidance for Claude Code working in this repository.
 
 ## Project
 
-**key-pulse-view** — an education KPI dashboard. Single-page React app with eight tabbed views (overview, executive summary, student journey, student profile, access & equity, teacher excellence, quality assurance, institutional efficiency).
+**key-pulse-view** — an education KPI dashboard with an embedded LLM assistant. Single-page React app with eight tabbed views (overview, executive summary, student journey, student profile, access & equity, teacher excellence, quality assurance, institutional efficiency), plus a floating chat bubble powered by a local Ollama model.
 
-All data is **static mock data** in `src/data/*.ts`. There is no backend, auth, or database. Treat the data files as the source of truth when adding charts or KPIs.
+Dashboard data is **static mock data** in `src/data/*.ts`. There is no DB or auth. The chat assistant is a Python FastAPI service in `server/`, dockerized along with Ollama.
 
-Originally generated with Lovable; now developed directly with Claude Code.
+Originally generated with Lovable; detached and now developed directly with Claude Code.
 
 ## Commands
 
-Package manager is **bun** (see `bun.lock` / `bun.lockb`).
+Frontend uses **bun** (or **npm**, both lockfiles work). Backend stack runs in **Docker**.
 
-| Task            | Command                |
-| --------------- | ---------------------- |
-| Install deps    | `bun install`          |
-| Dev server      | `bun dev`              |
-| Production build | `bun run build`       |
-| Dev-mode build  | `bun run build:dev`    |
-| Preview build   | `bun run preview`      |
-| Lint            | `bun run lint`         |
-| Unit tests      | `bun test` (vitest)    |
-| Watch tests     | `bun run test:watch`   |
-| E2E tests       | `bunx playwright test` |
+| Task                                  | Command                       |
+| ------------------------------------- | ----------------------------- |
+| Install frontend deps                 | `bun install` / `npm install` |
+| Frontend dev server (port 8080)       | `bun dev` / `npm run dev`     |
+| Production build                      | `bun run build`               |
+| Lint                                  | `bun run lint`                |
+| Unit tests (vitest)                   | `bun test` / `npm test`       |
+| E2E tests                             | `bunx playwright test`        |
+| **Bring up Docker stack** (api+ollama)| `npm run stack:up`            |
+| Stop stack                            | `npm run stack:down`          |
+| Tail stack logs                       | `npm run stack:logs`          |
+| Rebuild after Dockerfile change       | `npm run stack:rebuild`       |
 
-Dev server runs on `http://localhost:8080` (configured in `vite.config.ts`).
+**Typical dev session:** `npm run stack:up` (once, to start backend + Ollama), then `npm run dev` (Vite frontend with proxy to backend). Visit `http://localhost:8080`.
 
 ## Tech stack
 
@@ -46,13 +47,15 @@ Dev server runs on `http://localhost:8080` (configured in `vite.config.ts`).
 
 ```
 src/
-  App.tsx              router + providers (QueryClient, Tooltip, Toaster)
+  App.tsx              router + providers + DashboardProvider + ChatBubble
   main.tsx             entry point
   pages/
-    Index.tsx          single-page dashboard, holds tab state
+    Index.tsx          single-page dashboard (reads tab from DashboardContext)
     NotFound.tsx
+  contexts/
+    DashboardContext.tsx   exposes activeTab + selectedStudent (also fed to chat)
   components/
-    NavLink.tsx
+    chat/              ChatBubble, ChatPanel — floating LLM assistant
     dashboard/         feature components, one folder per tab
       landing/  student/  profile/  equity/
       teacher/  quality/  efficiency/
@@ -60,8 +63,17 @@ src/
     ui/                shadcn primitives — DO NOT hand-edit
   data/                static mock KPI datasets (one file per pillar)
   hooks/               use-mobile, use-toast
-  lib/utils.ts         cn() helper
+  lib/
+    chatClient.ts      SSE streaming client for /api/chat
+    utils.ts           cn() helper
   test/setup.ts        vitest + jest-dom + matchMedia stub
+
+server/                FastAPI + Ollama backend (Dockerized)
+  main.py              /api/health, /api/chat (SSE streaming)
+  Dockerfile           python:3.12-slim
+  requirements.txt
+  .env / .env.example  OLLAMA_HOST, OLLAMA_MODEL
+docker-compose.yml     ollama + bootstrap (model pull) + api
 ```
 
 ## Conventions
@@ -79,6 +91,14 @@ src/
 - Unit tests live next to source as `*.test.ts(x)` or `*.spec.ts(x)` under `src/`.
 - Vitest setup: `src/test/setup.ts` (loads `@testing-library/jest-dom`, stubs `matchMedia`).
 - Playwright config: `playwright.config.ts` (delegates to `lovable-agent-playwright-config`).
+
+## Backend / Ollama notes
+
+- Stack runs as 3 services: **`kpv-ollama`** (Ollama on host port 11436), **`kpv-bootstrap`** (one-shot, pulls `qwen2.5:7b` if missing), **`kpv-api`** (FastAPI on host port 8765).
+- Host port 11436 is used because port 11434 is already taken on this dev machine by `arch-assistant-ollama`. Inside the Docker network the api still talks to ollama on `:11434`.
+- GPU is enabled by default in `docker-compose.yml` via NVIDIA reservations. Comment out the `deploy` block if you don't have NVIDIA Container Toolkit.
+- `OLLAMA_MODEL` defaults to `qwen2.5:7b`. Change in `docker-compose.yml` (or via env) — bootstrap will pull it on next `up`.
+- Vite proxies `/api/*` → `http://localhost:8765` (see `vite.config.ts`).
 
 ## History
 
