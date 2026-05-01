@@ -1,16 +1,11 @@
-import { TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { executiveKpis } from "@/data/kpiData";
+import highlights from "@/data/heroHighlights.json";
 
 /**
  * BCG-style hero strip: 4 headline metrics pulled from KPIs,
  * each with a different visual treatment.
  */
-const highlights = [
-  { id: "learning-gain", label: "Learning Gain", prefix: "", suffix: "" },
-  { id: "enrollment", label: "Enrollment", prefix: "", suffix: "" },
-  { id: "teacher-quality", label: "Teacher Quality", prefix: "", suffix: "/100" },
-  { id: "budget-execution", label: "Budget Execution", prefix: "", suffix: "" },
-];
 
 const HeroMetrics = () => {
   return (

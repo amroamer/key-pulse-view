@@ -12,6 +12,7 @@ from fastapi.responses import StreamingResponse
 from ollama import AsyncClient
 from pydantic import BaseModel
 
+from data_loader import get_pillar
 from tools import TOOL_SCHEMAS, run_tool
 
 load_dotenv(Path(__file__).parent / ".env")
@@ -102,13 +103,55 @@ SYSTEM_PROMPT = (
 )
 
 
+def _format_visible_summary(pillar: str) -> str:
+    """Return a short markdown summary of the values rendered on the active
+    tab so the model can answer 'what's on screen' questions without tool calls."""
+    data = get_pillar(pillar)
+    if not isinstance(data, dict) or "error" in data:
+        return ""
+    lines: list[str] = []
+
+    health = data.get("landing_system_health")
+    if isinstance(health, dict):
+        lines.append("Visible header metrics (overview / landing tab):")
+        lines.append(f"- Total Students: {health.get('totalStudents')}")
+        lines.append(f"- Total Teachers: {health.get('totalTeachers')}")
+        lines.append(f"- Total Schools: {health.get('totalSchools')}")
+        lines.append(
+            f"- System Score: {health.get('systemScore')} (target {health.get('targetScore')})"
+        )
+        lines.append(f"- Student–Teacher Ratio: {health.get('studentTeacherRatio')}")
+
+    pillars = data.get("landing_pillar_scores")
+    if isinstance(pillars, list):
+        lines.append("\nPillar scores visible on landing:")
+        for p in pillars:
+            lines.append(
+                f"- {p['title']}: score {p['score']} / target {p['target']} ({p['status']}, {p['critical']} critical)"
+            )
+
+    journey_hero = data.get("journey_hero_metrics")
+    if isinstance(journey_hero, list):
+        lines.append("\nVisible header metrics (student journey tab):")
+        for m in journey_hero:
+            lines.append(f"- {m['label']}: {m['value']} ({m.get('sub','')})")
+
+    if not lines:
+        return ""
+    return "\n".join(lines)
+
+
 def build_system_prompt(ctx: Optional[ScreenContext]) -> str:
     extras: list[str] = []
     if ctx is not None:
         pillar = TAB_TO_PILLAR.get(ctx.activeTab, ctx.activeTab)
         extras.append(
-            f"Current tab: {ctx.activeTab}. When the user asks about 'this tab' or "
-            f"'what's on screen', call `get_pillar_data(pillar='{pillar}')` first."
+            f"Current tab: {ctx.activeTab} (pillar `{pillar}`). For deeper questions "
+            f"call `get_pillar_data(pillar='{pillar}')`. The values listed below are "
+            f"the metrics literally rendered on screen — answer with these when "
+            f"the user asks about what they're looking at, even if a keyword in "
+            f"their question matches a different tab's data.\n\n"
+            f"{_format_visible_summary(pillar)}"
         )
         if ctx.selectedStudent:
             extras.append(
@@ -117,7 +160,7 @@ def build_system_prompt(ctx: Optional[ScreenContext]) -> str:
             )
     if not extras:
         return SYSTEM_PROMPT
-    return SYSTEM_PROMPT + "\n\n" + " ".join(extras)
+    return SYSTEM_PROMPT + "\n\n" + "\n\n".join(extras)
 
 
 @app.get("/api/health")

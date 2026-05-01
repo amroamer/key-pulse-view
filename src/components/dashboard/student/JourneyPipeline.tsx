@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { journeyStages, transitions } from "@/data/studentJourneyData";
+import { journeyStages, transitions, journeyHeroMetrics } from "@/data/studentJourneyData";
 import { ChevronRight, TrendingUp, TrendingDown, Minus, Users, AlertTriangle, GraduationCap, BookOpen, Brain, Heart } from "lucide-react";
+
+const HERO_ICONS: Record<string, React.ReactNode> = {
+  Users: <Users size={16} />,
+  BookOpen: <BookOpen size={16} />,
+  GraduationCap: <GraduationCap size={16} />,
+  AlertTriangle: <AlertTriangle size={16} />,
+};
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 
@@ -62,14 +69,9 @@ const JourneyPipeline = () => {
     <div className="space-y-4">
       {/* Hero strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "Total Enrollment", value: "361.5K", icon: <Users size={16} />, sub: "+3.2% YoY" },
-          { label: "System Avg Score", value: "74", icon: <BookOpen size={16} />, sub: "Target: 80" },
-          { label: "Overall Completion", value: "88%", icon: <GraduationCap size={16} />, sub: "Target: 95%" },
-          { label: "Critical Drop-offs", value: "2", icon: <AlertTriangle size={16} />, sub: "Middle → Higher" },
-        ].map((m) => (
+        {journeyHeroMetrics.map((m) => (
           <div key={m.label} className="rounded-xl border border-border bg-card p-3 space-y-1">
-            <div className="flex items-center gap-1.5 text-muted-foreground">{m.icon}<span className="text-[10px] font-medium">{m.label}</span></div>
+            <div className="flex items-center gap-1.5 text-muted-foreground">{HERO_ICONS[m.iconKey] ?? <Users size={16} />}<span className="text-[10px] font-medium">{m.label}</span></div>
             <p className="text-xl font-extrabold text-foreground">{m.value}</p>
             <p className="text-[10px] text-muted-foreground">{m.sub}</p>
           </div>

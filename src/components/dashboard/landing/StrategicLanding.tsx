@@ -1,104 +1,27 @@
 import { type DashboardTab } from "../DashboardTabs";
 import { LayoutDashboard, GraduationCap, Scale, Award, ShieldCheck, Building2, Users, ArrowRight, TrendingUp, Target, AlertTriangle, ChevronRight } from "lucide-react";
 import ScrollReveal from "../ScrollReveal";
+import { systemHealth, strategicPillars as pillarSummaries, systemFlow, type StrategicPillarSummary } from "@/data/landingData";
 
 interface StrategicLandingProps {
   onNavigate: (tab: DashboardTab) => void;
 }
 
-const systemHealth = {
-  totalStudents: "361.5K",
-  totalTeachers: "24.2K",
-  totalSchools: "218",
-  systemScore: 74,
-  targetScore: 85,
+const ICONS_BY_ID: Record<string, React.ReactNode> = {
+  executive: <LayoutDashboard size={20} />,
+  student: <GraduationCap size={20} />,
+  equity: <Scale size={20} />,
+  teacher: <Award size={20} />,
+  quality: <ShieldCheck size={20} />,
+  efficiency: <Building2 size={20} />,
 };
 
-const strategicPillars: {
-  id: DashboardTab;
-  title: string;
-  subtitle: string;
-  icon: React.ReactNode;
-  score: number;
-  target: number;
-  status: "green" | "amber" | "red";
-  insight: string;
-  kpis: number;
-  critical: number;
-}[] = [
-  {
-    id: "executive",
-    title: "Executive Summary",
-    subtitle: "Strategic overview & priority actions",
-    icon: <LayoutDashboard size={20} />,
-    score: 74,
-    target: 85,
-    status: "amber",
-    insight: "3 KPIs require immediate attention across pillars",
-    kpis: 12,
-    critical: 3,
-  },
-  {
-    id: "student",
-    title: "Student Performance",
-    subtitle: "Lifecycle journey from KG to Higher Ed",
-    icon: <GraduationCap size={20} />,
-    score: 72,
-    target: 90,
-    status: "amber",
-    insight: "29% drop-off at Secondary → Higher Ed transition",
-    kpis: 5,
-    critical: 2,
-  },
-  {
-    id: "equity",
-    title: "Access & Equity",
-    subtitle: "Demographic gaps & inclusion metrics",
-    icon: <Scale size={20} />,
-    score: 68,
-    target: 85,
-    status: "red",
-    insight: "Significant gaps in SEN & low-income cohorts",
-    kpis: 4,
-    critical: 2,
-  },
-  {
-    id: "teacher",
-    title: "Teacher Excellence",
-    subtitle: "Workforce quality & development",
-    icon: <Award size={20} />,
-    score: 76,
-    target: 85,
-    status: "amber",
-    insight: "PD completion at 68%, retention improving",
-    kpis: 3,
-    critical: 1,
-  },
-  {
-    id: "quality",
-    title: "Quality Assurance",
-    subtitle: "School ratings & inspection outcomes",
-    icon: <ShieldCheck size={20} />,
-    score: 71,
-    target: 85,
-    status: "amber",
-    insight: "18% of schools need improvement plans",
-    kpis: 3,
-    critical: 1,
-  },
-  {
-    id: "efficiency",
-    title: "Institutional Efficiency",
-    subtitle: "Budget execution & resource utilization",
-    icon: <Building2 size={20} />,
-    score: 79,
-    target: 90,
-    status: "amber",
-    insight: "Budget execution at 87%, facilities at 72%",
-    kpis: 3,
-    critical: 0,
-  },
-];
+const strategicPillars: (StrategicPillarSummary & { id: DashboardTab; icon: React.ReactNode })[] =
+  pillarSummaries.map((p) => ({
+    ...p,
+    id: p.id as DashboardTab,
+    icon: ICONS_BY_ID[p.id] ?? <LayoutDashboard size={20} />,
+  }));
 
 const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
   const overallScore = Math.round(strategicPillars.reduce((a, p) => a + p.score, 0) / strategicPillars.length);
@@ -252,16 +175,10 @@ const StrategicLanding = ({ onNavigate }: StrategicLandingProps) => {
         <div className="rounded-xl border border-border bg-card p-5 space-y-4">
           <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">System Flow — How It All Connects</h2>
           <div className="flex flex-col sm:flex-row items-stretch gap-0 overflow-x-auto">
-            {[
-              { label: "Student Enrollment", desc: "361.5K students enter the system", color: "primary", tab: "student" as DashboardTab },
-              { label: "Teaching & Learning", desc: "24.2K teachers deliver curriculum", color: "secondary", tab: "teacher" as DashboardTab },
-              { label: "Quality Assurance", desc: "218 schools inspected & rated", color: "primary", tab: "quality" as DashboardTab },
-              { label: "Equity Check", desc: "Gaps measured across demographics", color: "secondary", tab: "equity" as DashboardTab },
-              { label: "Outcomes & Efficiency", desc: "Budget executed, results delivered", color: "primary", tab: "efficiency" as DashboardTab },
-            ].map((step, i) => (
+            {systemFlow.map((step, i) => (
               <div key={step.label} className="flex items-stretch flex-1 min-w-0">
                 <button
-                  onClick={() => onNavigate(step.tab)}
+                  onClick={() => onNavigate(step.tab as DashboardTab)}
                   className="flex-1 rounded-xl border border-border bg-background/60 p-3 text-left hover:bg-muted/60 hover:border-primary/30 transition-all group"
                 >
                   <div className="flex items-center gap-2 mb-1">

@@ -37,6 +37,14 @@ export interface RiskIndicator {
   status: "green" | "amber" | "red";
 }
 
+export interface JourneyHeroMetric {
+  label: string;
+  value: string;
+  iconKey: string;
+  sub: string;
+}
+
+export const journeyHeroMetrics = raw.journeyHeroMetrics as JourneyHeroMetric[];
 export const journeyStages = raw.journeyStages as JourneyStage[];
 export const transitions = raw.transitions as TransitionPoint[];
 export const cohortTrends = raw.cohortTrends as CohortData[];

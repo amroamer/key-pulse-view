@@ -1,0 +1,6 @@
+[
+  { "id": "learning-gain", "label": "Learning Gain", "prefix": "", "suffix": "" },
+  { "id": "enrollment", "label": "Enrollment", "prefix": "", "suffix": "" },
+  { "id": "teacher-quality", "label": "Teacher Quality", "prefix": "", "suffix": "/100" },
+  { "id": "budget-execution", "label": "Budget Execution", "prefix": "", "suffix": "" }
+]

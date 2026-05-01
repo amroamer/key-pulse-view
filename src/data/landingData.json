@@ -1,0 +1,87 @@
+{
+  "systemHealth": {
+    "totalStudents": "361.5K",
+    "totalTeachers": "24.2K",
+    "totalSchools": "218",
+    "systemScore": 74,
+    "targetScore": 85,
+    "studentTeacherRatio": "1:15",
+    "studentsTrend": "+3.2% YoY",
+    "schoolsInspected": "98%"
+  },
+  "systemFlow": [
+    { "label": "Student Enrollment", "desc": "361.5K students enter the system", "color": "primary", "tab": "student" },
+    { "label": "Teaching & Learning", "desc": "24.2K teachers deliver curriculum", "color": "secondary", "tab": "teacher" },
+    { "label": "Quality Assurance", "desc": "218 schools inspected & rated", "color": "primary", "tab": "quality" },
+    { "label": "Equity Check", "desc": "Gaps measured across demographics", "color": "secondary", "tab": "equity" },
+    { "label": "Outcomes & Efficiency", "desc": "Budget executed, results delivered", "color": "primary", "tab": "efficiency" }
+  ],
+  "strategicPillars": [
+    {
+      "id": "executive",
+      "title": "Executive Summary",
+      "subtitle": "Strategic overview & priority actions",
+      "score": 74,
+      "target": 85,
+      "status": "amber",
+      "insight": "3 KPIs require immediate attention across pillars",
+      "kpis": 12,
+      "critical": 3
+    },
+    {
+      "id": "student",
+      "title": "Student Performance",
+      "subtitle": "Lifecycle journey from KG to Higher Ed",
+      "score": 72,
+      "target": 90,
+      "status": "amber",
+      "insight": "29% drop-off at Secondary → Higher Ed transition",
+      "kpis": 5,
+      "critical": 2
+    },
+    {
+      "id": "equity",
+      "title": "Access & Equity",
+      "subtitle": "Demographic gaps & inclusion metrics",
+      "score": 68,
+      "target": 85,
+      "status": "red",
+      "insight": "Significant gaps in SEN & low-income cohorts",
+      "kpis": 4,
+      "critical": 2
+    },
+    {
+      "id": "teacher",
+      "title": "Teacher Excellence",
+      "subtitle": "Workforce quality & development",
+      "score": 76,
+      "target": 85,
+      "status": "amber",
+      "insight": "PD completion at 68%, retention improving",
+      "kpis": 3,
+      "critical": 1
+    },
+    {
+      "id": "quality",
+      "title": "Quality Assurance",
+      "subtitle": "School ratings & inspection outcomes",
+      "score": 71,
+      "target": 85,
+      "status": "amber",
+      "insight": "18% of schools need improvement plans",
+      "kpis": 3,
+      "critical": 1
+    },
+    {
+      "id": "efficiency",
+      "title": "Institutional Efficiency",
+      "subtitle": "Budget execution & resource utilization",
+      "score": 79,
+      "target": 90,
+      "status": "amber",
+      "insight": "Budget execution at 87%, facilities at 72%",
+      "kpis": 3,
+      "critical": 0
+    }
+  ]
+}

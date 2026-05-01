@@ -43,9 +43,17 @@ def _datasets() -> dict[str, Any]:
     teacher = _read_json("teacherData.json")
     journey = _read_json("studentJourneyData.json")
     profile = _read_json("studentProfileData.json")
+    landing = _read_json("landingData.json")
+    hero_highlights = _read_json("heroHighlights.json")
 
     return {
-        # Executive / Overview
+        # Landing / Overview header
+        "landing_system_health": landing["systemHealth"],
+        "landing_pillar_scores": landing["strategicPillars"],
+        "landing_system_flow": landing["systemFlow"],
+        "landing_hero_highlights": hero_highlights,
+
+        # Executive scoreboard
         "overview_kpis": _executive_kpis(),
 
         # Efficiency tab
@@ -77,6 +85,7 @@ def _datasets() -> dict[str, Any]:
         "teacher_by_subject": teacher["teacherBySubject"],
 
         # Student Journey tab
+        "journey_hero_metrics": journey["journeyHeroMetrics"],
         "journey_stages": journey["journeyStages"],
         "journey_transitions": journey["transitions"],
         "journey_cohort_trends": journey["cohortTrends"],
@@ -92,9 +101,21 @@ def _datasets() -> dict[str, Any]:
 
 
 PILLAR_TO_DATASETS: dict[str, list[str]] = {
-    "executive": ["overview_kpis"],
-    "landing": ["overview_kpis"],
-    "overview": ["overview_kpis"],
+    "executive": [
+        "landing_system_health",
+        "landing_pillar_scores",
+        "overview_kpis",
+    ],
+    "landing": [
+        "landing_system_health",
+        "landing_pillar_scores",
+        "overview_kpis",
+    ],
+    "overview": [
+        "landing_system_health",
+        "landing_pillar_scores",
+        "overview_kpis",
+    ],
     "efficiency": [
         "efficiency_hero_metrics",
         "efficiency_budget",
@@ -124,6 +145,7 @@ PILLAR_TO_DATASETS: dict[str, list[str]] = {
         "teacher_by_subject",
     ],
     "student": [
+        "journey_hero_metrics",
         "journey_stages",
         "journey_transitions",
         "journey_cohort_trends",
