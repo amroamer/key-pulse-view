@@ -235,12 +235,14 @@ const ChatPanel = ({
           toolCalls.push({ name: event.name, args: event.args, status: "running" });
           render();
         } else if (event.type === "tool_result") {
+          const status = event.error ? "failed" : "done";
+          const result = event.error ?? event.count;
           const last = toolCalls[toolCalls.length - 1];
           if (last && last.status === "running" && last.name === event.name) {
-            last.status = "done";
-            last.result = event.count;
+            last.status = status;
+            last.result = result;
           } else {
-            toolCalls.push({ name: event.name, status: "done", result: event.count });
+            toolCalls.push({ name: event.name, status, result });
           }
           render();
         } else if (event.type === "chart") {

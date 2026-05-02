@@ -89,6 +89,10 @@ When the user asks "Tell me about <metric>" or a sharper variant, use:
 - On follow-ups ("why?", "show details", "what should we do?"), stay
   on the user's current tab unless they explicitly name another pillar.
 - If a tool returns nothing, say so plainly — don't guess.
+- NEVER write any sentence that mentions a chart, graph, or visualization
+  unless you actually called `render_chart` and it succeeded this turn.
+  If `render_chart` returned an error, say "I couldn't chart that —
+  <reason>" instead of pretending a chart was rendered.
 
 ## Formatting
 

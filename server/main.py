@@ -139,7 +139,11 @@ SYSTEM_PROMPT = (
     "- Never describe the UI (\"click here\", \"scroll down\", \"view the chart\").\n"
     "- On follow-ups (\"why?\", \"show details\", \"what should we do?\"), stay "
     "on the user's current tab unless they explicitly name another pillar.\n"
-    "- If a tool returns nothing, say so plainly — don't guess.\n\n"
+    "- If a tool returns nothing, say so plainly — don't guess.\n"
+    "- NEVER write any sentence that mentions a chart, graph, or visualization "
+    "unless you actually called `render_chart` and it succeeded this turn. "
+    "If `render_chart` returned an error, say \"I couldn't chart that — "
+    "<reason>\" instead of pretending a chart was rendered.\n\n"
 
     "## Formatting\n\n"
     "Render markdown: **bold**, bullet lists, small tables, inline `code`.\n"
@@ -367,6 +371,30 @@ async def chat(req: ChatRequest) -> StreamingResponse:
                             {"role": "tool", "name": name, "content": tool_payload}
                         )
                     else:
+                        # Surface tool-side errors so the UI can mark the
+                        # tool card as failed instead of showing "ok".
+                        err = (
+                            result.get("error")
+                            if isinstance(result, dict)
+                            else None
+                        )
+                        if err:
+                            yield _sse(
+                                {
+                                    "type": "tool_result",
+                                    "name": name,
+                                    "error": str(err),
+                                }
+                            )
+                            msgs.append(
+                                {
+                                    "role": "tool",
+                                    "name": name,
+                                    "content": json.dumps(result),
+                                }
+                            )
+                            continue
+
                         yield _sse(
                             {
                                 "type": "tool_result",

@@ -69,7 +69,7 @@ export async function listModels(): Promise<ListModelsResponse> {
 export type ChatEvent =
   | { type: "chunk"; content: string }
   | { type: "tool_call"; name: string; args: unknown }
-  | { type: "tool_result"; name: string; count?: number }
+  | { type: "tool_result"; name: string; count?: number; error?: string }
   | { type: "chart"; spec: ChartSpec }
   | { type: "done" }
   | { type: "error"; message: string };
