@@ -34,7 +34,22 @@ const STARTER_PROMPTS: Record<DashboardTab, string[]> = {
   efficiency: ["Cost per student vs target", "Top 3 areas to optimize", "Headcount trend in one paragraph"],
 };
 
-const FOLLOWUP_PROMPTS = ["Why?", "Show details", "What should we do?"];
+const FOLLOWUP_PROMPTS: { label: string; prompt: string }[] = [
+  {
+    label: "Why?",
+    prompt: "Why? Give the top 2–3 drivers with specific numbers from the data.",
+  },
+  {
+    label: "Show details",
+    prompt:
+      "Show me the full breakdown — list every sub-metric with its value, target, and status as bullet points.",
+  },
+  {
+    label: "What should we do?",
+    prompt:
+      "Recommend 3 prioritised actions to address this. One bullet each, with a one-line rationale grounded in the numbers.",
+  },
+];
 
 const TypingDots = () => (
   <div className="flex items-center gap-1 py-1" aria-label="Assistant is thinking">
@@ -372,14 +387,14 @@ const ChatPanel = ({
         })}
         {showFollowups && (
           <div className="flex flex-wrap gap-2 pl-1 pt-1">
-            {FOLLOWUP_PROMPTS.map((s) => (
+            {FOLLOWUP_PROMPTS.map(({ label, prompt }) => (
               <button
-                key={s}
+                key={label}
                 type="button"
-                onClick={() => send(s)}
+                onClick={() => send(prompt)}
                 className="rounded-full border border-border/70 bg-background px-2.5 py-1 text-xs text-muted-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-colors"
               >
-                {s}
+                {label}
               </button>
             ))}
           </div>

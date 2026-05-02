@@ -284,9 +284,15 @@ Three suggested questions per tab, shown as clickable chips when the chat is emp
 
 **Source:** [src/components/chat/ChatPanel.tsx](src/components/chat/ChatPanel.tsx) (`FOLLOWUP_PROMPTS`)
 
-```
-"Why?" · "Show details" · "What should we do?"
-```
+The button label stays short; clicking sends a more directive prompt so
+the model knows to expand instead of falling back to the default 1–3
+sentence answer.
+
+| Button label | Prompt sent |
+|---|---|
+| `Why?` | `Why? Give the top 2–3 drivers with specific numbers from the data.` |
+| `Show details` | `Show me the full breakdown — list every sub-metric with its value, target, and status as bullet points.` |
+| `What should we do?` | `Recommend 3 prioritised actions to address this. One bullet each, with a one-line rationale grounded in the numbers.` |
 
 ### 4c. Card-click pre-fill
 
