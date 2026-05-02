@@ -7,9 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { useDashboard } from "@/contexts/DashboardContext";
 import {
   streamChat,
+  type ChartSpec,
   type ChatMessage,
   type ToolInvocation,
 } from "@/lib/chatClient";
+import ChatChart from "./ChatChart";
 import type { DashboardTab } from "@/components/dashboard/DashboardTabs";
 import { getSelectedModel } from "@/lib/modelSettings";
 import { cn } from "@/lib/utils";
@@ -199,6 +201,7 @@ const ChatPanel = ({
 
     let answer = "";
     const toolCalls: ToolInvocation[] = [];
+    const charts: ChartSpec[] = [];
 
     const render = () => {
       setMessages((m) => {
@@ -209,6 +212,7 @@ const ChatPanel = ({
             ...last,
             content: answer,
             toolCalls: toolCalls.map((t) => ({ ...t })),
+            charts: charts.length ? charts.map((c) => ({ ...c })) : undefined,
           };
         }
         return next;
@@ -238,6 +242,9 @@ const ChatPanel = ({
           } else {
             toolCalls.push({ name: event.name, status: "done", result: event.count });
           }
+          render();
+        } else if (event.type === "chart") {
+          charts.push(event.spec);
           render();
         } else if (event.type === "error") {
           setMessages((m) => {
@@ -327,6 +334,9 @@ const ChatPanel = ({
                   <>
                     {m.toolCalls?.map((tc, ti) => (
                       <ToolCard key={ti} tool={tc} />
+                    ))}
+                    {m.charts?.map((c, ci) => (
+                      <ChatChart key={ci} spec={c} />
                     ))}
                     {m.content ? (
                       <div

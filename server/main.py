@@ -118,7 +118,10 @@ SYSTEM_PROMPT = (
     "- `status_summary()` — overall red/amber/green rollup\n"
     "- `get_kpi(id)` — single executive-scoreboard KPI\n"
     "- `search_data(query)` — topic could span pillars\n"
-    "- `get_student_profile(id)` — full bundle for one student\n\n"
+    "- `get_student_profile(id)` — full bundle for one student\n"
+    "- `render_chart(dataset, chart_type)` — ONLY when the user asks to "
+    "chart / graph / visualize / plot something. Pick bar / line / pie. "
+    "After it runs, write one short caption — do not list the values.\n\n"
 
     "## Tool routing for common clicks\n\n"
     "When the user asks \"Tell me about <metric>\" or a sharper variant, use:\n"
@@ -328,20 +331,56 @@ async def chat(req: ChatRequest) -> StreamingResponse:
 
                     yield _sse({"type": "tool_call", "name": name, "args": args})
                     result = run_tool(name, args)
-                    yield _sse(
-                        {
-                            "type": "tool_result",
-                            "name": name,
-                            "count": _result_count(result),
-                        }
+
+                    # Chart tools emit a chart event AND return a short
+                    # confirmation to the model so it doesn't list the values.
+                    is_chart = (
+                        isinstance(result, dict) and result.get("kind") == "chart"
                     )
-                    msgs.append(
-                        {
-                            "role": "tool",
-                            "name": name,
-                            "content": json.dumps(result),
-                        }
-                    )
+                    if is_chart:
+                        yield _sse(
+                            {
+                                "type": "chart",
+                                "spec": result["spec"],
+                            }
+                        )
+                        yield _sse(
+                            {"type": "tool_result", "name": name, "count": None}
+                        )
+                        spec = result["spec"]
+                        n = len(spec.get("data", []))
+                        y_keys = ", ".join(spec.get("y", []))
+                        tool_payload = (
+                            f"Chart rendered: {spec['type']} chart titled "
+                            f"'{spec.get('title')}' with {n} rows "
+                            f"(x={spec.get('x')}, y={y_keys}). "
+                            "The chart is now visible to the user. Now write "
+                            "EXACTLY ONE short caption sentence — describe "
+                            "the chart's shape only. Do NOT list, cite, "
+                            "rank, or invent any specific numbers, names, "
+                            "or values; they would just duplicate the chart "
+                            "the user is already looking at. Good example: "
+                            f"\"Bar chart of {spec.get('y', ['value'])[0]} "
+                            f"across {n} items.\""
+                        )
+                        msgs.append(
+                            {"role": "tool", "name": name, "content": tool_payload}
+                        )
+                    else:
+                        yield _sse(
+                            {
+                                "type": "tool_result",
+                                "name": name,
+                                "count": _result_count(result),
+                            }
+                        )
+                        msgs.append(
+                            {
+                                "role": "tool",
+                                "name": name,
+                                "content": json.dumps(result),
+                            }
+                        )
 
             yield _sse(
                 {

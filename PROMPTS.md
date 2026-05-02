@@ -1,6 +1,6 @@
 # Prompts in use
 
-Every text the LLM (qwen2.5:7b via Ollama) sees, plus the user-facing chat strings, in one place. Updated 2026-05-02.
+Every text the LLM (qwen2.5:7b / llama3.1:8b via Ollama) sees, plus the user-facing chat strings, in one place. Updated 2026-05-02.
 
 If you change one of these, also update this file so it stays in sync.
 
@@ -66,6 +66,9 @@ invent metric names or numbers.
 - `get_kpi(id)` — single executive-scoreboard KPI
 - `search_data(query)` — topic could span pillars
 - `get_student_profile(id)` — full bundle for one student
+- `render_chart(dataset, chart_type)` — ONLY when the user asks to
+  chart / graph / visualize / plot something. Pick bar / line / pie.
+  After it runs, write one short caption — do not list the values.
 
 ## Tool routing for common clicks
 
@@ -220,6 +223,34 @@ dataset to query.
 ```
 Return everything known about a student: profile, milestones,
 academic records, risk dimensions, interventions.
+```
+
+### `render_chart(dataset, chart_type, x?, y?, title?)`
+```
+Render a chart inline in the chat — bar, line, or pie. Use
+ONLY when the user explicitly asks to chart / graph /
+visualize / plot / show <something> as a chart. Do NOT call
+this for normal 'what's red' or 'tell me about' questions.
+Pick `chart_type`: 'bar' for category comparisons, 'line'
+for trends over time, 'pie' for share-of-total.
+`dataset` MUST be a list-of-objects dataset name, NOT a
+pillar/tab name. Common picks:
+- 'overview KPIs / scoreboard / executive KPIs' → 'overview_kpis'
+- 'pillar scores' → 'landing_pillar_scores'
+- 'equity dimensions' → 'equity_dimensions'
+- 'school ratings' → 'quality_school_ratings'
+- 'budget' → 'efficiency_budget'
+- 'teacher quality bands' → 'teacher_quality_bands'
+- 'student journey stages' → 'journey_stages'
+Do NOT use 'landing_system_health' (it's a single object,
+not a list). When unsure, call `list_datasets` first.
+`x` and `y` are optional — omit them and the server picks
+human-readable defaults. After this tool runs, write ONE
+short caption sentence describing what the chart shows —
+e.g. "Bar chart of current value across 12 KPIs." Do NOT
+invent numbers, ranges, counts, or pillar names that aren't
+in the data — describe shape only. The user can read the
+chart themselves.
 ```
 
 ---

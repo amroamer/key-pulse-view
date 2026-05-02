@@ -7,10 +7,23 @@ export interface ToolInvocation {
   result?: unknown;
 }
 
+export type ChartType = "bar" | "line" | "pie";
+
+export interface ChartSpec {
+  type: ChartType;
+  title?: string;
+  data: Array<Record<string, string | number>>;
+  /** Field name on each row used for the x axis (or pie slice label). */
+  x: string;
+  /** Field name(s) on each row used for y values (one or more series). */
+  y: string[];
+}
+
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   toolCalls?: ToolInvocation[];
+  charts?: ChartSpec[];
 }
 
 export interface ScreenContext {
@@ -52,6 +65,7 @@ export type ChatEvent =
   | { type: "chunk"; content: string }
   | { type: "tool_call"; name: string; args: unknown }
   | { type: "tool_result"; name: string; count?: number }
+  | { type: "chart"; spec: ChartSpec }
   | { type: "done" }
   | { type: "error"; message: string };
 
