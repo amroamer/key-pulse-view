@@ -1,5 +1,10 @@
 import type { DashboardTab } from "@/components/dashboard/DashboardTabs";
 
+// All API calls go through the app's base path so the same code works
+// in dev (Vite proxy at /khda/api/*) and behind nginx in prod (where
+// the upstream router only forwards /khda/* to this app).
+const API_BASE = `${import.meta.env.BASE_URL}api`;
+
 export interface ToolInvocation {
   name: string;
   args?: unknown;
@@ -54,7 +59,7 @@ export interface ListModelsResponse {
 }
 
 export async function listModels(): Promise<ListModelsResponse> {
-  const res = await fetch("/api/models");
+  const res = await fetch(`${API_BASE}/models`);
   if (!res.ok) {
     throw new Error(`Failed to list models: ${res.status} ${res.statusText}`);
   }
@@ -73,7 +78,7 @@ export async function* streamChat(
   req: ChatRequest,
   signal?: AbortSignal,
 ): AsyncGenerator<ChatEvent> {
-  const res = await fetch("/api/chat", {
+  const res = await fetch(`${API_BASE}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),

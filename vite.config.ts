@@ -12,6 +12,14 @@ export default defineConfig({
       overlay: false,
     },
     proxy: {
+      // Frontend fetches /khda/api/* so the same paths work behind nginx in
+      // prod. Strip /khda before forwarding because the FastAPI app mounts
+      // routes at /api/*, not /khda/api/*.
+      "/khda/api": {
+        target: "http://localhost:8765",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/khda/, ""),
+      },
       "/api": {
         target: "http://localhost:8765",
         changeOrigin: true,
